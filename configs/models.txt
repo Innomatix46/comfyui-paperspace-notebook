@@ -1,0 +1,57 @@
+# =============================================================================
+# A6000 + FREE TIER (50GB) OPTIMIZED MODEL CONFIGURATION
+# =============================================================================
+# Format: [TARGET_SUBDIRECTORY] [DOWNLOAD_URL]
+# Target subdirectory is relative to /storage/ComfyUI/models/
+# 
+# STORAGE BUDGET BREAKDOWN (50GB Total):
+# - System + ComfyUI + Dependencies: ~15GB
+# - Models (selected): ~25GB
+# - Working space + outputs: ~10GB
+# =============================================================================
+
+# --- ESSENTIAL CHECKPOINT (A6000 OPTIMIZED) ---
+# Choose ONE primary model to fit in 50GB constraint
+checkpoints https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors
+
+# --- ESSENTIAL VAE (SMALL BUT CRUCIAL) ---
+# High quality VAE that works well with A6000's memory bandwidth
+vae https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors
+
+# --- COMPACT EMBEDDINGS (MINIMAL SIZE, HIGH IMPACT) ---
+# Small files that improve generation quality
+embeddings https://huggingface.co/embed/negative/resolve/main/EasyNegativeV2.safetensors
+
+# =============================================================================
+# OPTIONAL MODELS (UNCOMMENT ONLY IF STORAGE ALLOWS)
+# Check available space with: df -h /storage
+# =============================================================================
+
+# --- Additional Checkpoint (7GB each) ---
+# checkpoints https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors
+
+# --- LoRA Models (Small 100-500MB each) ---
+# loras https://civitai.com/api/download/models/16576
+# loras https://huggingface.co/XLabs-AI/flux-lora-collection/resolve/main/art_lora.safetensors
+
+# --- ControlNet (1-2GB each) ---
+# controlnet https://huggingface.co/diffusers/controlnet-canny-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors
+# controlnet https://huggingface.co/diffusers/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors
+
+# --- IP-Adapter (500MB-1GB each) ---
+# ipadapter https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors
+# ipadapter https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors
+
+# --- Alternative VAE (Optional) ---
+# vae https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors
+
+# --- CLIP (Large 1.5GB - use only if needed) ---
+# clip https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K/resolve/main/open_clip_pytorch_model.bin
+
+# =============================================================================
+# A6000 PERFORMANCE NOTES:
+# - A6000 has 48GB VRAM - can handle large models with Flash Attention
+# - Use bitsandbytes quantization to fit bigger models in VRAM
+# - Prefer .safetensors format for faster loading
+# - Monitor GPU temp: A6000 can throttle at 83°C
+# =============================================================================

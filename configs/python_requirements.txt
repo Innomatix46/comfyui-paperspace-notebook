@@ -1,0 +1,63 @@
+# =============================================================================
+# A6000 (48GB VRAM) + FREE TIER (50GB STORAGE) OPTIMIZED INSTALLATION
+# =============================================================================
+# PyTorch index URL for CUDA 12.4 compatibility (A6000 supports CUDA 12.x)
+--index-url https://download.pytorch.org/whl/cu124
+
+# Core PyTorch stack - optimized for A6000's 48GB VRAM
+torch==2.6.0+cu124                # PyTorch with CUDA 12.4 (A6000 optimized)
+torchvision==0.21.0+cu124          # Computer vision library (essential only)
+xformers==0.0.28.post3             # Memory-efficient attention (critical for A6000)
+
+# Flash Attention - ESSENTIAL for A6000 performance (enables larger batch sizes)
+# Pre-compiled wheel maximizes A6000's compute units
+https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu124torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+
+# =============================================================================
+# ESSENTIAL ML LIBRARIES (FREE TIER OPTIMIZED - MINIMAL FOOTPRINT)
+# =============================================================================
+accelerate==1.2.1                  # A6000 acceleration (enables gradient accumulation)
+transformers==4.46.3               # Core for modern AI models (required)
+safetensors==0.4.5                 # Fast, safe tensor loading (saves storage)
+
+# =============================================================================
+# A6000 PERFORMANCE OPTIMIZERS (HIGH PRIORITY)
+# =============================================================================
+bitsandbytes==0.45.0               # 8-bit quantization (saves 50% VRAM on A6000)
+# triton                          # Commented: Let PyTorch manage this
+
+# =============================================================================
+# MINIMAL MEDIA PROCESSING (STORAGE CONSCIOUS)
+# =============================================================================
+pillow==11.0.0                     # Image processing (essential for ComfyUI)
+# opencv-python==4.10.0.84         # Commented: Large package, use only if needed
+# ffmpeg-python==0.2.0             # Commented: Video processing (optional)
+
+# =============================================================================
+# ESSENTIAL UTILITIES ONLY (50GB STORAGE LIMIT)
+# =============================================================================
+numpy==2.1.3                       # Fundamental arrays (required)
+requests==2.32.3                   # HTTP for downloads (required)
+tqdm==4.67.1                       # Progress bars (small, useful)
+# scipy==1.14.1                    # Commented: Large scientific lib (optional)
+
+# =============================================================================
+# A6000 MONITORING (ESSENTIAL FOR FREE TIER)
+# =============================================================================
+gpustat==1.1.1                     # Monitor A6000 utilization (prevents overheating)
+pynvml==11.5.3                     # NVIDIA GPU management (essential)
+
+# =============================================================================
+# MINIMAL JUPYTERLAB SETUP (DEVELOPMENT ESSENTIAL)
+# =============================================================================
+jupyterlab==4.3.3                  # Core development environment
+# jupyter-server-proxy==4.4.0      # Commented: Proxy features (saves space)
+# jupyterlab-git==0.50.1           # Commented: Git integration (optional)
+
+# =============================================================================
+# NOTES FOR CUSTOMIZATION:
+# - Add custom packages below this section
+# - Use exact version numbers for reproducibility
+# - Test compatibility with CUDA 12.4 before adding GPU-dependent packages
+# - For development packages, add them to a separate requirements-dev.txt
+# =============================================================================

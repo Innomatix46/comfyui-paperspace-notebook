@@ -1,0 +1,11 @@
+# Essential ComfyUI Custom Nodes
+# Each line should be a Git repository URL
+# To temporarily disable a node, comment it out with # like this:
+# https://github.com/example/disabled-node
+
+https://github.com/ltdrdata/ComfyUI-Manager
+https://github.com/ltdrdata/ComfyUI-Impact-Pack
+https://github.com/Gourieff/ComfyUI-ReActor-Node
+https://github.com/cubiq/ComfyUI_IPAdapter_plus
+https://github.com/WASasquatch/was-node-suite-comfyui
+https://github.com/rgthree/rgthree-comfy
