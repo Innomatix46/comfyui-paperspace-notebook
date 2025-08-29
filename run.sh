@@ -114,10 +114,10 @@ echo ""
 echo "🌟 Phase 4: Launching ComfyUI"
 echo "=========================================="
 
-# Construct ComfyUI launch arguments optimized for A6000 + Free Tier
+# Construct ComfyUI launch arguments optimized for A6000 + Free Tier + Paperspace
 COMFYUI_ARGS=(
     --listen                                    # Accept connections from any IP
-    --port 8188                                # Standard ComfyUI port
+    --port 6006                                # Paperspace Tensorboard port (for external access)
     --preview-method auto                      # Automatic preview generation
     --output-directory "$STORAGE_DIR/output"   # Persistent output storage
     --input-directory "$STORAGE_DIR/input"     # Persistent input storage
@@ -140,18 +140,19 @@ if [ -n "$PAPERSPACE_FQDN" ]; then
     echo ""
     echo "🌐 ComfyUI Access Information"
     echo "=========================================="
-    echo "🔗 ComfyUI URL: https://$PAPERSPACE_FQDN:8188/"
-    echo "🔗 JupyterLab URL: https://$PAPERSPACE_FQDN:8889/"
+    echo "🔗 ComfyUI URL: https://tensorboard-$PAPERSPACE_FQDN/"
+    echo "🔗 JupyterLab URL: https://$PAPERSPACE_FQDN/lab/"
     echo ""
     echo "📋 Click the URLs above to access your instances!"
     echo "🚀 A6000 GPU: 48GB VRAM optimized with Flash Attention"
     echo "💾 Free Tier: 50GB storage with intelligent management"
     echo "⏰ Auto-restart: Every 6 hours (logs at /storage/ComfyUI/restart.log)"
     echo "📊 Storage monitor: ./scripts/storage_optimizer.sh status"
+    echo "🎯 Port 6006: Uses Paperspace Tensorboard URL mapping"
     echo "=========================================="
 else
     echo "==> Note: PAPERSPACE_FQDN not detected"
-    echo "==> ComfyUI: http://localhost:8188 (A6000 optimized)"
+    echo "==> ComfyUI: http://localhost:6006 (A6000 optimized, Tensorboard port)"
     echo "==> JupyterLab: http://localhost:8889 (root access)"
     echo "==> Storage: 50GB Free Tier with monitoring"
     echo "==> Auto-restart: Every 6 hours"

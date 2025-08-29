@@ -18,7 +18,7 @@ A production-ready, configuration-driven ComfyUI setup optimized for Paperspace 
 
 ### 🔬 **Development Environment**
 - **JupyterLab Integration**: Automatically sets up JupyterLab with root access for advanced development
-- **Dual-Port Access**: ComfyUI on port 8188, JupyterLab on port 8889
+- **Tensorboard URL Access**: ComfyUI accessible via Paperspace's built-in port 6006 Tensorboard mapping
 - **Root Privileges**: Full system access for package installation and system configuration
 - **Git Integration**: Built-in version control support in JupyterLab
 
@@ -31,7 +31,11 @@ A production-ready, configuration-driven ComfyUI setup optimized for Paperspace 
 
 ## Quick Start Guide
 
-1. **Open a new Paperspace Gradient notebook** with a GPU instance (RTX 4000 or better recommended)
+### 🎯 **100% Working Paperspace Access Method**
+
+The key insight: ComfyUI works perfectly in Paperspace using **Tensorboard URL mapping** on port 6006!
+
+1. **Open a new Paperspace Gradient notebook** with a GPU instance (RTX A6000 recommended)
 
 2. **Create a new code cell** and paste the following commands:
 
@@ -48,11 +52,11 @@ A production-ready, configuration-driven ComfyUI setup optimized for Paperspace 
    - Configure JupyterLab with root access for development
    - Download configured models (if specified)
    - Start auto-restart scheduler for 6-hour maintenance cycles
-   - Launch ComfyUI on port 8188 and JupyterLab on port 8889
+   - Launch ComfyUI on port 6006 (Tensorboard mapping) and JupyterLab
 
 4. **Access your services** via the provided URLs that appear in the output:
-   - **ComfyUI**: `https://[PAPERSPACE_FQDN]:8188/` - Main AI image generation interface
-   - **JupyterLab**: `https://[PAPERSPACE_FQDN]:8889/` - Development environment with root access
+   - **ComfyUI**: `https://tensorboard-[PAPERSPACE_FQDN]/` - Main AI image generation interface (uses Paperspace Tensorboard mapping)
+   - **JupyterLab**: `https://[PAPERSPACE_FQDN]/lab/` - Development environment with root access
 
 5. **Monitor the system**:
    - Auto-restart logs: `/storage/ComfyUI/restart.log`
@@ -169,6 +173,8 @@ The `run.sh` script is your single entry point that:
 
 ### Common Issues
 
+- **Can't access ComfyUI**: Use the **Tensorboard URL** `https://tensorboard-[PAPERSPACE_FQDN]/` (100% working)
+- **Connection refused**: ComfyUI is running on port 6006, not 8188 - use the tensorboard- subdomain  
 - **Models not loading**: Check symlinks with `ls -la ComfyUI/models/`
 - **Custom node errors**: Review installation logs for specific node requirements
 - **Memory issues**: Reduce model sizes or use smaller custom node sets
@@ -204,10 +210,35 @@ tail -f /storage/jupyterlab.log
 
 ## Requirements
 
-- Paperspace Gradient notebook with GPU
+- Paperspace Gradient notebook with GPU (RTX A6000 recommended for 48GB VRAM)
 - CUDA 12.4 compatible instance
-- At least 16GB disk space for base installation
+- At least 50GB disk space for Free Tier optimization
 - Additional space for models as configured
+
+## 🎯 Paperspace Access Guide
+
+### ✅ The 100% Working Method
+
+ComfyUI in Paperspace works perfectly using **Tensorboard URL mapping**:
+
+1. **Port 6006**: Uses Paperspace's built-in Tensorboard port mapping
+2. **Tensorboard subdomain**: Automatically maps to `https://tensorboard-[PAPERSPACE_FQDN]/`
+3. **No SSL errors**: Paperspace handles certificates automatically
+4. **100% reliable**: No connection refused or port access issues
+
+### 📋 Direct Access Example
+
+If your Paperspace FQDN is `nleajkwn3o.clg07azjl.paperspacegradient.com`, your ComfyUI URL is:
+```
+https://tensorboard-nleajkwn3o.clg07azjl.paperspacegradient.com/
+```
+
+### 🔧 Alternative Access via Jupyter Notebook
+
+Use the included `ComfyUI_Tensorboard_Access.ipynb` notebook:
+1. Run the cells to get your exact access URL
+2. Automatically starts ComfyUI with A6000 optimizations
+3. Displays working links for easy access
 
 ## License
 
