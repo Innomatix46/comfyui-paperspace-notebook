@@ -73,8 +73,9 @@ Das `run.sh` Skript führt folgende Schritte durch:
 
 #### 2.2 Abhängigkeiten installieren
 - ComfyUI Repository klonen
-- Python 3.10 Virtual Environment erstellen
-- PyTorch 2.6 + CUDA 12.4 installieren
+- Python Virtual Environment erstellen (3.12 bevorzugt, 3.11+ unterstützt)
+- PyTorch 2.6+ + CUDA 12.4 installieren
+- Flash Attention automatisch für CUDA-Umgebungen (Pre-built Wheels für Python 3.12)
 - Custom Nodes installieren (siehe `configs/custom_nodes.txt`)
 
 #### 2.3 Modelle herunterladen
@@ -212,10 +213,80 @@ source scripts/configure_jupyterlab.sh && configure_jupyterlab && start_jupyterl
 - Verwenden Sie die korrekte Repository-URL ohne extra Zeichen
 - Oder starten Sie direkt mit `!./run.sh` wenn Sie bereits im Verzeichnis sind
 
+**❌ FEHLER: Flash Attention Installation schlägt fehl**
+**✅ LÖSUNG**: 
+
+**Lokale Entwicklung (macOS/Windows ohne CUDA):**
+```bash
+# Flash Attention ist nur für CUDA-GPUs optimiert
+# Für lokale Tests ohne CUDA skip Flash Attention:
+source venv/bin/activate
+pip install torch torchvision torchaudio
+# Flash Attention überspringen - ComfyUI funktioniert ohne
+
+# Alternative: xformers verwenden
+pip install xformers
+```
+
+**Paperspace/CUDA-Umgebung:**
+```bash
+# Erst CUDA-Version prüfen
+nvcc --version
+
+# PyTorch mit CUDA installieren
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# METHODE 1: Pre-built Wheels (EMPFOHLEN)
+# Python 3.12, CUDA 12.4, PyTorch 2.8
+pip install https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.0.0/flash_attn-2.6.3+cu124torch2.8-cp312-cp312-linux_x86_64.whl
+
+# METHODE 2: Build from source (Falls Pre-built nicht verfügbar)
+# Build-Dependencies installieren
+pip install ninja packaging wheel setuptools
+# Flash Attention mit korrekter CUDA-Umgebung
+export CUDA_HOME=/usr/local/cuda
+pip install flash-attn --no-build-isolation
+```
+
 **❌ FEHLER: "chmod: cannot access '│': No such file or directory"**
 **✅ LÖSUNG**: 
 - Kopieren Sie die Befehle einzeln, nicht den ganzen Block
 - Stellen Sie sicher, dass keine versteckten Zeichen vorhanden sind
+
+**❌ FEHLER: JupyterLab zeigt nicht alle Ordner - fehlender Root-Zugriff**
+**✅ LÖSUNG**:
+
+**Lokale Entwicklung (macOS/Windows):**
+```bash
+# JupyterLab mit Root-Zugriff konfigurieren
+source scripts/configure_jupyterlab.sh && configure_jupyterlab
+
+# JupyterLab mit Root-Zugriff starten
+source venv/bin/activate
+jupyter lab --allow-root --port=8889 --ip=0.0.0.0 --no-browser --config ~/.jupyter/jupyter_lab_config.py
+
+# Zugriff über Browser:
+# http://127.0.0.1:8889/lab
+```
+
+**Paperspace-Umgebung:**
+```bash
+# Automatisch konfiguriert durch run.sh Script
+./run.sh
+
+# Manueller Start:
+source scripts/configure_jupyterlab.sh && configure_jupyterlab && start_jupyterlab
+```
+
+**Wichtige Konfigurationseinstellungen:**
+```python
+# ~/.jupyter/jupyter_lab_config.py
+c.ServerApp.allow_root = True
+c.ServerApp.root_dir = '/'  # Root-Zugriff auf gesamtes System
+c.ServerApp.notebook_dir = '/'  # Startet im Root-Verzeichnis
+c.ServerApp.ip = '0.0.0.0'  # Zugriff von extern
+c.ServerApp.token = ''  # Kein Token für einfachen Zugriff
+```
 
 **❌ FEHLER: Kann nicht auf ComfyUI zugreifen**
 **✅ LÖSUNG**: 

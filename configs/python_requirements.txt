@@ -9,9 +9,12 @@ torch==2.6.0+cu124                # PyTorch with CUDA 12.4 (A6000 optimized)
 torchvision==0.21.0+cu124          # Computer vision library (essential only)
 xformers==0.0.28.post3             # Memory-efficient attention (critical for A6000)
 
-# Flash Attention - ESSENTIAL for A6000 performance (enables larger batch sizes)
-# Pre-compiled wheel maximizes A6000's compute units
-https://github.com/Dao-AILab/flash-attention/releases/download/v2.6.3/flash_attn-2.6.3+cu124torch2.6cxx11abiFALSE-cp310-cp310-linux_x86_64.whl
+# Flash Attention - ESSENTIAL for A6000 performance (enabled für CUDA-Umgebungen)
+# METHODE 1: Pre-built wheels (empfohlen für Python 3.12)
+# https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.0.0/flash_attn-2.6.3+cu124torch2.8-cp312-cp312-linux_x86_64.whl
+# METHODE 2: Build from source (fallback)
+# flash-attn>=2.6.0 --no-build-isolation
+# NOTE: macOS überspringt Flash Attention automatisch - läuft ohne
 
 # =============================================================================
 # ESSENTIAL ML LIBRARIES (FREE TIER OPTIMIZED - MINIMAL FOOTPRINT)

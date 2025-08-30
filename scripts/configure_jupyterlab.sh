@@ -33,11 +33,12 @@ c.ServerApp.token = ''
 c.ServerApp.password = ''
 c.ServerApp.disable_check_xsrf = False
 
-# File browser settings
-c.ServerApp.root_dir = '/storage'
+# File browser settings - ROOT ACCESS für alle Ordner
+c.ServerApp.root_dir = '/'  # Root-Zugriff auf gesamtes Dateisystem
+c.ServerApp.notebook_dir = '/'  # Startet im Root-Verzeichnis
 
-# Enable extensions
-c.LabApp.collaborative = True
+# Extensions (collaboration disabled to avoid dependency issues)
+# c.LabApp.collaborative = True  # Disabled - requires jupyter-collaboration
 
 # Performance settings
 c.ServerApp.max_buffer_size = 268435456

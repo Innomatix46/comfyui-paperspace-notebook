@@ -18,8 +18,21 @@ install_dependencies() {
     # Create Python virtual environment if not present
     echo "==> Checking for Python virtual environment..."
     if [ ! -d "venv" ]; then
-        echo "==> Creating Python 3.10 virtual environment..."
-        python3.10 -m venv venv
+        echo "==> Creating Python virtual environment (3.12 preferred)..."
+        # Try Python versions in order of preference: 3.12 > 3.11 > 3.10
+        if command -v python3.12 &> /dev/null; then
+            echo "==> Using Python 3.12 (recommended)"
+            python3.12 -m venv venv
+        elif command -v python3.11 &> /dev/null; then
+            echo "==> Using Python 3.11 (good performance)"
+            python3.11 -m venv venv
+        elif command -v python3.10 &> /dev/null; then
+            echo "==> Using Python 3.10 (fallback)"
+            python3.10 -m venv venv
+        else
+            echo "==> Using default Python 3"
+            python3 -m venv venv
+        fi
         echo "==> Virtual environment created successfully"
     else
         echo "==> Virtual environment already exists, skipping creation"
@@ -36,6 +49,37 @@ install_dependencies() {
     # Install Python packages from requirements
     echo "==> Installing Python packages from requirements..."
     if [ -f "configs/python_requirements.txt" ]; then
+        # Install build dependencies first
+        echo "==> Installing build dependencies..."
+        pip install --upgrade pip setuptools wheel ninja packaging
+        
+        # Detect Python version and environment
+        PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+        echo "==> Detected Python $PYTHON_VERSION"
+        
+        # Install Flash Attention if in CUDA environment
+        if command -v nvcc &> /dev/null && [ -d "/usr/local/cuda" ]; then
+            echo "==> CUDA environment detected - installing Flash Attention..."
+            
+            # Try pre-built wheels first (Python 3.12 with PyTorch 2.8)
+            if [ "$PYTHON_VERSION" = "3.12" ]; then
+                echo "==> Installing pre-built Flash Attention for Python 3.12..."
+                pip install https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.0.0/flash_attn-2.6.3+cu124torch2.8-cp312-cp312-linux_x86_64.whl || {
+                    echo "==> Pre-built wheel failed, building from source..."
+                    export CUDA_HOME=/usr/local/cuda
+                    pip install flash-attn --no-build-isolation
+                }
+            else
+                echo "==> Building Flash Attention from source for Python $PYTHON_VERSION..."
+                export CUDA_HOME=/usr/local/cuda
+                pip install flash-attn --no-build-isolation
+            fi
+        else
+            echo "==> Non-CUDA environment detected - skipping Flash Attention"
+            echo "==> Flash Attention wird in Paperspace automatisch installiert"
+        fi
+        
+        # Install main requirements
         pip install -r configs/python_requirements.txt
         echo "==> Python packages installed successfully"
     else
