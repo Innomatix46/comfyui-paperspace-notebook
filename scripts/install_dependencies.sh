@@ -1,18 +1,63 @@
 #!/bin/bash
-# install_dependencies.sh - Install ComfyUI and dependencies
+# install_dependencies.sh - Install ComfyUI and dependencies with robust error handling
 # This script handles the initial setup of ComfyUI and all required dependencies
 
+# Error handling
+set -euo pipefail
+trap 'echo "❌ Error occurred at line $LINENO. Exit code: $?"' ERR
+
+# Logging
+LOG_FILE="/tmp/comfyui_install_$(date +%Y%m%d_%H%M%S).log"
+exec 2>&1 | tee -a "$LOG_FILE"
+
+# Retry function
+retry_command() {
+    local max_attempts=3
+    local delay=5
+    local attempt=1
+    local command="$@"
+    
+    while [ $attempt -le $max_attempts ]; do
+        echo "==> Attempt $attempt/$max_attempts: $command"
+        if eval "$command"; then
+            echo "✅ Success"
+            return 0
+        fi
+        
+        if [ $attempt -lt $max_attempts ]; then
+            echo "⚠️ Failed, retrying in ${delay}s..."
+            sleep $delay
+            delay=$((delay * 2))
+        fi
+        attempt=$((attempt + 1))
+    done
+    
+    echo "❌ Failed after $max_attempts attempts"
+    return 1
+}
+
+# Dependency check function
+check_dependency() {
+    local package=$1
+    python -c "import $package" 2>/dev/null && echo "✅ $package installed" || echo "❌ $package missing"
+}
+
 install_dependencies() {
-    echo "==> Starting dependency installation..."
+    echo "==> Starting robust dependency installation..."
+    echo "==> Log file: $LOG_FILE"
     
     # Clone ComfyUI repository if not present
     echo "==> Checking for ComfyUI repository..."
     if [ ! -d "ComfyUI" ]; then
         echo "==> Cloning ComfyUI repository..."
-        git clone https://github.com/comfyanonymous/ComfyUI.git
+        retry_command "git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git" || {
+            echo "==> Trying alternative clone method..."
+            retry_command "git clone https://github.com/comfyanonymous/ComfyUI.git"
+        }
         echo "==> ComfyUI repository cloned successfully"
     else
-        echo "==> ComfyUI repository already exists, skipping clone"
+        echo "==> ComfyUI repository already exists, updating..."
+        cd ComfyUI && git pull --rebase || echo "⚠️ Could not update ComfyUI" && cd ..
     fi
     
     # Create Python virtual environment if not present
@@ -59,22 +104,63 @@ install_dependencies() {
         
         # Install PyTorch packages first with CUDA index (compatible versions)
         echo "==> Installing PyTorch packages with CUDA 12.4 support..."
-        pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124
+        retry_command "pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124" || {
+            echo "==> Trying alternative PyTorch installation..."
+            retry_command "pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu124"
+        }
+        
+        # Verify PyTorch installation
+        python -c "import torch; print(f'✅ PyTorch {torch.__version__} installed')" || {
+            echo "❌ PyTorch installation failed!"
+            return 1
+        }
         
         # Install xformers separately with flexible versioning to resolve conflicts
         echo "==> Installing xformers with automatic version resolution..."
-        pip install --index-url https://download.pytorch.org/whl/cu124 xformers || pip install xformers
+        retry_command "pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 xformers" || {
+            echo "==> Trying xformers from PyPI..."
+            retry_command "pip install --no-cache-dir xformers"
+        }
         
         # Install remaining packages from PyPI (default index)
         echo "==> Installing remaining ML packages from PyPI..."
-        pip install accelerate>=0.27.0 transformers>=4.36.0 safetensors>=0.4.0 bitsandbytes>=0.41.0
-        pip install pillow>=10.0.0 numpy>=1.24.0 requests>=2.28.0 tqdm>=4.64.0
-        pip install gpustat>=1.0.0 pynvml>=11.4.0 jupyterlab>=4.0.0
+        
+        # Install in batches for better error handling
+        ML_PACKAGES=(
+            "accelerate>=0.27.0"
+            "transformers>=4.36.0"
+            "safetensors>=0.4.0"
+            "bitsandbytes>=0.41.0"
+        )
+        
+        for package in "${ML_PACKAGES[@]}"; do
+            retry_command "pip install --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
+        done
+        
+        # Essential packages
+        ESSENTIAL_PACKAGES=(
+            "pillow>=10.0.0"
+            "numpy>=1.24.0"
+            "requests>=2.28.0"
+            "tqdm>=4.64.0"
+            "gpustat>=1.0.0"
+            "pynvml>=11.4.0"
+            "jupyterlab>=4.0.0"
+        )
+        
+        for package in "${ESSENTIAL_PACKAGES[@]}"; do
+            retry_command "pip install --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
+        done
         
         # Install missing ComfyUI dependencies
         echo "==> Installing ComfyUI-specific dependencies..."
-        pip install torchsde torchaudio --index-url https://download.pytorch.org/whl/cu124
-        pip install scipy einops
+        retry_command "pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu124" || {
+            echo "⚠️ torchaudio installation failed, trying without CUDA..."
+            pip install --no-cache-dir torchaudio
+        }
+        
+        retry_command "pip install --no-cache-dir torchsde" || echo "⚠️ torchsde installation failed"
+        retry_command "pip install --no-cache-dir scipy einops" || echo "⚠️ scipy/einops installation failed"
         
         # Install Flash Attention AFTER PyTorch if in CUDA environment
         if command -v nvcc &> /dev/null && [ -d "/usr/local/cuda" ]; then
@@ -156,5 +242,35 @@ install_dependencies() {
         echo "==> Warning: configs/custom_nodes.txt not found, skipping custom nodes installation"
     fi
     
-    echo "==> Dependency installation completed successfully"
+    # Final verification
+    echo "==> Verifying critical dependencies..."
+    local failed_deps=0
+    
+    CRITICAL_DEPS=(
+        "torch"
+        "torchvision"
+        "numpy"
+        "PIL"
+        "tqdm"
+        "requests"
+    )
+    
+    for dep in "${CRITICAL_DEPS[@]}"; do
+        if ! python -c "import $dep" 2>/dev/null; then
+            echo "❌ Critical dependency missing: $dep"
+            ((failed_deps++))
+        else
+            echo "✅ $dep verified"
+        fi
+    done
+    
+    if [ $failed_deps -gt 0 ]; then
+        echo "⚠️ $failed_deps critical dependencies missing. ComfyUI may not work properly."
+        echo "==> Run ./scripts/fix_dependencies.sh to repair"
+    else
+        echo "✅ All critical dependencies installed successfully"
+    fi
+    
+    echo "==> Dependency installation completed"
+    echo "==> Full log available at: $LOG_FILE"
 }
