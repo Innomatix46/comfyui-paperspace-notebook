@@ -242,9 +242,6 @@ install_dependencies() {
             else
                 echo "==> No requirements.txt found for $repo_name"
             fi
-            else
-                echo "==> Custom node $repo_name already exists, skipping clone"
-            fi
         done < configs/custom_nodes.txt
         
         echo "==> Custom nodes installation completed"
