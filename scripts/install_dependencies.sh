@@ -71,6 +71,11 @@ install_dependencies() {
         pip install pillow>=10.0.0 numpy>=1.24.0 requests>=2.28.0 tqdm>=4.64.0
         pip install gpustat>=1.0.0 pynvml>=11.4.0 jupyterlab>=4.0.0
         
+        # Install missing ComfyUI dependencies
+        echo "==> Installing ComfyUI-specific dependencies..."
+        pip install torchsde torchaudio --index-url https://download.pytorch.org/whl/cu124
+        pip install scipy einops
+        
         # Install Flash Attention AFTER PyTorch if in CUDA environment
         if command -v nvcc &> /dev/null && [ -d "/usr/local/cuda" ]; then
             echo "==> CUDA environment detected - installing Flash Attention..."

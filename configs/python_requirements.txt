@@ -40,7 +40,8 @@ pillow>=10.0.0                     # Image processing (essential for ComfyUI)
 numpy>=1.24.0                      # Fundamental arrays (required)
 requests>=2.28.0                   # HTTP for downloads (required)
 tqdm>=4.64.0                       # Progress bars (small, useful)
-# scipy==1.14.1                    # Commented: Large scientific lib (optional)
+scipy>=1.11.0                      # Scientific computing (required for ComfyUI)
+einops>=0.6.0                      # Tensor operations (required for some nodes)
 
 # =============================================================================
 # A6000 MONITORING (ESSENTIAL FOR FREE TIER)
