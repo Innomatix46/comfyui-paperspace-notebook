@@ -89,6 +89,19 @@ echo "==> Loading storage optimizer module..."
 source "$PROJECT_ROOT/scripts/storage_optimizer.sh"
 
 # =============================================================================
+# NOTEBOOK REPAIR (Fix corrupted notebooks before starting)
+# =============================================================================
+
+echo ""
+echo "🔧 Pre-Phase: Checking and Repairing Notebooks"
+echo "=========================================="
+if [ -f "$PROJECT_ROOT/fix_notebooks_paperspace.sh" ]; then
+    bash "$PROJECT_ROOT/fix_notebooks_paperspace.sh"
+else
+    echo "Notebook repair script not found, skipping..."
+fi
+
+# =============================================================================
 # EXECUTION FLOW
 # =============================================================================
 
