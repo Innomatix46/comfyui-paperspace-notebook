@@ -2,9 +2,10 @@
 # A6000 (48GB VRAM) + FREE TIER (50GB STORAGE) OPTIMIZED INSTALLATION
 # =============================================================================
 # Core PyTorch stack - optimized for A6000's 48GB VRAM
-torch==2.6.0+cu124                # PyTorch with CUDA 12.4 (A6000 optimized)
-torchvision==0.21.0+cu124          # Computer vision library (essential only)
-xformers==0.0.28.post3             # Memory-efficient attention (critical for A6000)
+# NOTE: Installed separately in script to handle version conflicts
+# torch==2.6.0+cu124                # PyTorch with CUDA 12.4 (A6000 optimized) 
+# torchvision==0.21.0+cu124          # Computer vision library (essential only)
+# xformers (auto-resolved version)   # Memory-efficient attention (critical for A6000)
 
 # Flash Attention - ESSENTIAL for A6000 performance (enabled für CUDA-Umgebungen)
 # METHODE 1: Pre-built wheels (empfohlen für Python 3.12)

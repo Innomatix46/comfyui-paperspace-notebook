@@ -57,9 +57,13 @@ install_dependencies() {
         PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
         echo "==> Detected Python $PYTHON_VERSION"
         
-        # Install PyTorch packages first with CUDA index
+        # Install PyTorch packages first with CUDA index (compatible versions)
         echo "==> Installing PyTorch packages with CUDA 12.4 support..."
-        pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124 xformers==0.0.28.post3
+        pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124
+        
+        # Install xformers separately with flexible versioning to resolve conflicts
+        echo "==> Installing xformers with automatic version resolution..."
+        pip install --index-url https://download.pytorch.org/whl/cu124 xformers || pip install xformers
         
         # Install remaining packages from PyPI (default index)
         echo "==> Installing remaining ML packages from PyPI..."
