@@ -1,9 +1,6 @@
 # =============================================================================
 # A6000 (48GB VRAM) + FREE TIER (50GB STORAGE) OPTIMIZED INSTALLATION
 # =============================================================================
-# PyTorch index URL for CUDA 12.4 compatibility (A6000 supports CUDA 12.x)
---index-url https://download.pytorch.org/whl/cu124
-
 # Core PyTorch stack - optimized for A6000's 48GB VRAM
 torch==2.6.0+cu124                # PyTorch with CUDA 12.4 (A6000 optimized)
 torchvision==0.21.0+cu124          # Computer vision library (essential only)

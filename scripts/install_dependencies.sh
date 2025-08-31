@@ -57,9 +57,15 @@ install_dependencies() {
         PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
         echo "==> Detected Python $PYTHON_VERSION"
         
-        # Install main requirements FIRST (includes PyTorch)
-        echo "==> Installing PyTorch and core dependencies first..."
-        pip install -r configs/python_requirements.txt
+        # Install PyTorch packages first with CUDA index
+        echo "==> Installing PyTorch packages with CUDA 12.4 support..."
+        pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124 xformers==0.0.28.post3
+        
+        # Install remaining packages from PyPI (default index)
+        echo "==> Installing remaining ML packages from PyPI..."
+        pip install accelerate>=0.27.0 transformers>=4.36.0 safetensors>=0.4.0 bitsandbytes>=0.41.0
+        pip install pillow>=10.0.0 numpy>=1.24.0 requests>=2.28.0 tqdm>=4.64.0
+        pip install gpustat>=1.0.0 pynvml>=11.4.0 jupyterlab>=4.0.0
         
         # Install Flash Attention AFTER PyTorch if in CUDA environment
         if command -v nvcc &> /dev/null && [ -d "/usr/local/cuda" ]; then
