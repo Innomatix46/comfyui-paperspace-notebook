@@ -102,11 +102,11 @@ install_dependencies() {
         PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
         echo "==> Detected Python $PYTHON_VERSION"
         
-        # Install PyTorch packages first with CUDA index (compatible versions)
+        # Install PyTorch packages first with CUDA index (use -U for latest compatible versions)
         echo "==> Installing PyTorch packages with CUDA 12.4 support..."
-        retry_command "pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124" || {
-            echo "==> Trying alternative PyTorch installation..."
-            retry_command "pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu124"
+        retry_command "pip install -U --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 torch torchvision" || {
+            echo "==> Trying with specific versions as fallback..."
+            retry_command "pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124"
         }
         
         # Verify PyTorch installation
@@ -117,9 +117,9 @@ install_dependencies() {
         
         # Install xformers separately with flexible versioning to resolve conflicts
         echo "==> Installing xformers with automatic version resolution..."
-        retry_command "pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 xformers" || {
+        retry_command "pip install -U --no-cache-dir --index-url https://download.pytorch.org/whl/cu124 xformers" || {
             echo "==> Trying xformers from PyPI..."
-            retry_command "pip install --no-cache-dir xformers"
+            retry_command "pip install -U --no-cache-dir xformers"
         }
         
         # Install remaining packages from PyPI (default index)
@@ -134,7 +134,7 @@ install_dependencies() {
         )
         
         for package in "${ML_PACKAGES[@]}"; do
-            retry_command "pip install --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
+            retry_command "pip install -U --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
         done
         
         # Essential packages
@@ -149,7 +149,7 @@ install_dependencies() {
         )
         
         for package in "${ESSENTIAL_PACKAGES[@]}"; do
-            retry_command "pip install --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
+            retry_command "pip install -U --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
         done
         
         # Install missing ComfyUI dependencies
