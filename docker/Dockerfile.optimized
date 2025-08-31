@@ -1,0 +1,282 @@
+# Optimized Dockerfile for ComfyUI based on sd-webui-containers insights
+# Multi-stage build for smaller final image
+
+# Stage 1: CUDA base with system dependencies
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04 AS cuda-base
+
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Install system dependencies (from sd-webui-containers)
+RUN apt-get update && apt-get install -y \
+    # Essential tools
+    git curl wget aria2 \
+    # Build tools
+    gcc g++ make cmake \
+    # Python and development
+    python3.10 python3.10-venv python3-pip python3.10-dev \
+    # Libraries
+    libgl1 libglib2.0-0 libsm6 libxext6 libxrender-dev libgomp1 \
+    # Performance tools
+    google-perftools \
+    # Network and system
+    nginx rsync openssh-client \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set Python 3.10 as default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+
+# Stage 2: Python dependencies
+FROM cuda-base AS python-deps
+
+# Install pip properly
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
+
+# Upgrade pip and install wheel
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install PyTorch with CUDA 12.1 (matching sd-webui-containers)
+RUN pip install --no-cache-dir \
+    torch==2.1.2+cu121 \
+    torchvision==0.16.2+cu121 \
+    torchaudio==2.1.2+cu121 \
+    --index-url https://download.pytorch.org/whl/cu121
+
+# Install xformers for memory optimization
+RUN pip install --no-cache-dir xformers==0.0.23.post1
+
+# Stage 3: ComfyUI installation
+FROM python-deps AS comfyui-install
+
+WORKDIR /workspace
+
+# Clone ComfyUI
+RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
+    cd ComfyUI && \
+    git checkout $(git describe --tags --abbrev=0)
+
+# Install ComfyUI requirements
+RUN cd ComfyUI && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Install additional packages for better compatibility
+RUN pip install --no-cache-dir \
+    # Essential packages
+    opencv-python-headless \
+    transformers>=4.36.0 \
+    diffusers>=0.25.0 \
+    accelerate>=0.25.0 \
+    safetensors>=0.4.0 \
+    einops \
+    omegaconf \
+    # Audio/Video support
+    torchaudio \
+    torchsde \
+    scipy \
+    av \
+    # Performance
+    onnxruntime-gpu \
+    tensorrt \
+    # Monitoring
+    tensorboard \
+    wandb
+
+# Stage 4: Custom nodes and extensions
+FROM comfyui-install AS extensions
+
+# Install ComfyUI Manager
+RUN cd ComfyUI/custom_nodes && \
+    git clone https://github.com/ltdrdata/ComfyUI-Manager.git && \
+    cd ComfyUI-Manager && \
+    pip install --no-cache-dir -r requirements.txt || true
+
+# Install popular custom nodes with error handling
+RUN cd ComfyUI/custom_nodes && \
+    # ComfyUI Impact Pack
+    git clone https://github.com/ltdrdata/ComfyUI-Impact-Pack.git && \
+    (cd ComfyUI-Impact-Pack && pip install --no-cache-dir -r requirements.txt || true) && \
+    # Efficiency Nodes
+    git clone https://github.com/jags111/efficiency-nodes-comfyui.git && \
+    (cd efficiency-nodes-comfyui && pip install --no-cache-dir -r requirements.txt || true) && \
+    # ControlNet
+    git clone https://github.com/Fannovel16/comfyui_controlnet_aux.git && \
+    (cd comfyui_controlnet_aux && pip install --no-cache-dir -r requirements.txt || true) && \
+    # AnimateDiff
+    git clone https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved.git && \
+    (cd ComfyUI-AnimateDiff-Evolved && pip install --no-cache-dir -r requirements.txt || true) || true
+
+# Stage 5: Model downloads (optional, can be skipped for smaller image)
+FROM extensions AS models
+
+# Create model directories structure (matching sd-webui-containers)
+RUN mkdir -p \
+    /workspace/ComfyUI/models/checkpoints \
+    /workspace/ComfyUI/models/vae \
+    /workspace/ComfyUI/models/loras \
+    /workspace/ComfyUI/models/embeddings \
+    /workspace/ComfyUI/models/controlnet \
+    /workspace/ComfyUI/models/clip \
+    /workspace/ComfyUI/models/unet \
+    /workspace/ComfyUI/models/diffusers \
+    /workspace/ComfyUI/models/gligen \
+    /workspace/ComfyUI/models/hypernetworks \
+    /workspace/ComfyUI/models/style_models \
+    /workspace/ComfyUI/models/photomaker \
+    /workspace/ComfyUI/models/animatediff_models \
+    /workspace/ComfyUI/models/animatediff_motion_lora
+
+# Download essential models using aria2 for speed
+# VAE model (small, essential)
+RUN aria2c -x 5 --dir=/workspace/ComfyUI/models/vae --out=vae-ft-mse-840000-ema-pruned.safetensors \
+    "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors" || true
+
+# CLIP Vision model
+RUN aria2c -x 5 --dir=/workspace/ComfyUI/models/clip_vision --out=CLIP-ViT-H-14.safetensors \
+    "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors" || true
+
+# Stage 6: Final optimized image
+FROM extensions AS final
+
+# Set up environment variables
+ENV PYTHONUNBUFFERED=1 \
+    GRADIO_ALLOW_FLAGGING=never \
+    GRADIO_NUM_PORTS=1 \
+    GRADIO_SERVER_NAME=0.0.0.0 \
+    GRADIO_THEME=dark \
+    SYSTEM=spaces \
+    HF_HUB_ENABLE_HF_TRANSFER=1 \
+    COMMANDLINE_ARGS="--listen --port 8188 --enable-cors-header" \
+    NVIDIA_VISIBLE_DEVICES=all \
+    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4
+
+# Create workspace directories for Paperspace
+RUN mkdir -p /notebooks /storage /temp-storage && \
+    chmod -R 777 /notebooks /storage /temp-storage
+
+# Create optimized entrypoint script
+RUN cat > /start.sh << 'EOF'
+#!/bin/bash
+set -e
+
+echo "🚀 Starting ComfyUI Optimized Container"
+echo "========================================"
+
+# Function to detect GPU
+detect_gpu() {
+    if nvidia-smi &>/dev/null; then
+        echo "✅ GPU detected: $(nvidia-smi --query-gpu=name --format=csv,noheader)"
+        return 0
+    else
+        echo "❌ No GPU detected"
+        return 1
+    fi
+}
+
+# Function to wait for GPU (Paperspace specific)
+wait_for_gpu() {
+    echo "⏳ Waiting for GPU allocation (max 60s)..."
+    for i in {1..60}; do
+        if detect_gpu; then
+            return 0
+        fi
+        sleep 1
+        if [ $((i % 10)) -eq 0 ]; then
+            echo "   Still waiting... ($i/60)"
+        fi
+    done
+    return 1
+}
+
+# Check environment
+if [ ! -z "$PAPERSPACE_CLUSTER_ID" ]; then
+    echo "📍 Paperspace environment detected"
+    wait_for_gpu || echo "⚠️ Continuing without GPU"
+else
+    detect_gpu || echo "⚠️ Continuing without GPU"
+fi
+
+# Create symlinks for Paperspace storage
+if [ -d "/storage" ]; then
+    echo "🔗 Setting up storage symlinks..."
+    
+    # Link model directories to persistent storage
+    for dir in checkpoints vae loras embeddings controlnet clip unet; do
+        if [ ! -e "/workspace/ComfyUI/models/$dir" ] || [ -L "/workspace/ComfyUI/models/$dir" ]; then
+            rm -rf "/workspace/ComfyUI/models/$dir"
+            mkdir -p "/storage/models/$dir"
+            ln -sf "/storage/models/$dir" "/workspace/ComfyUI/models/$dir"
+            echo "   Linked: models/$dir -> /storage/models/$dir"
+        fi
+    done
+    
+    # Link output directory
+    if [ ! -e "/workspace/ComfyUI/output" ] || [ -L "/workspace/ComfyUI/output" ]; then
+        rm -rf "/workspace/ComfyUI/output"
+        mkdir -p "/storage/output"
+        ln -sf "/storage/output" "/workspace/ComfyUI/output"
+        echo "   Linked: output -> /storage/output"
+    fi
+fi
+
+# Set CUDA optimizations
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+export CUDA_LAUNCH_BLOCKING=0
+
+# Check if custom start command provided
+if [ ! -z "$CUSTOM_COMMAND" ]; then
+    echo "🎯 Running custom command: $CUSTOM_COMMAND"
+    exec $CUSTOM_COMMAND
+fi
+
+# Start ComfyUI
+cd /workspace/ComfyUI
+
+if detect_gpu; then
+    echo "🚀 Starting ComfyUI with GPU acceleration..."
+    exec python main.py \
+        --listen 0.0.0.0 \
+        --port 8188 \
+        --enable-cors-header '*' \
+        --use-pytorch-cross-attention \
+        --preview-method auto
+else
+    echo "🐌 Starting ComfyUI in CPU mode..."
+    exec python main.py \
+        --listen 0.0.0.0 \
+        --port 8188 \
+        --enable-cors-header '*' \
+        --cpu \
+        --preview-method auto
+fi
+EOF
+
+RUN chmod +x /start.sh
+
+# Expose ports
+EXPOSE 8188 8501 6006
+
+# Set working directory
+WORKDIR /workspace/ComfyUI
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8188/ || exit 1
+
+# Clean up apt cache and pip cache
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip cache purge
+
+# Use non-root user for security (optional, can be commented for Paperspace)
+# RUN useradd -m -u 1000 -s /bin/bash comfyui && \
+#     chown -R comfyui:comfyui /workspace
+# USER comfyui
+
+# Default command
+CMD ["/start.sh"]
