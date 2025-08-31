@@ -206,46 +206,55 @@ source scripts/configure_jupyterlab.sh && configure_jupyterlab && start_jupyterl
 
 ## 🛠️ Fehlerbehebung
 
-### Häufige Probleme und Lösungen
+### Häufige Probleme und Lösungen (AKTUALISIERT 2025)
+
+**❌ FEHLER: "Cannot install torch==2.6.0+cu124 and xformers==0.0.28.post3"**
+**✅ LÖSUNG**: 
+- Automatisch behoben - xformers wird separat mit automatischer Versionserkennung installiert
+- Falls manuell: `pip install --index-url https://download.pytorch.org/whl/cu124 xformers`
+
+**❌ FEHLER: "No matching distribution found for accelerate>=0.27.0"**
+**✅ LÖSUNG**: 
+- Automatisch behoben - PyPI-Pakete werden separat vom PyTorch-Index installiert
+- Script installiert PyTorch-Pakete mit CUDA-Index, dann ML-Pakete von PyPI
+
+**❌ FEHLER: "ModuleNotFoundError: No module named 'torch'" bei Flash Attention**
+**✅ LÖSUNG**: 
+- Automatisch behoben - PyTorch wird VOR Flash Attention installiert
+- Installationsreihenfolge: PyTorch → ML-Pakete → Flash Attention
+
+**❌ FEHLER: "could not read Username for 'https://github.com'" bei Custom Nodes**
+**✅ LÖSUNG**: 
+- Problematische Nodes (z.B. ComfyUI-ReActor-Node) temporär deaktiviert
+- Manuelle Installation über ComfyUI Manager nach Setup möglich
+- Script überspringt fehlerhafte Nodes statt komplett zu crashen
+
+### Aktuelle Installation-Reihenfolge (Stand: 2025)
 
 **❌ FEHLER: "fatal: Too many arguments" beim Git Clone**
 **✅ LÖSUNG**: 
 - Verwenden Sie die korrekte Repository-URL ohne extra Zeichen
 - Oder starten Sie direkt mit `!./run.sh` wenn Sie bereits im Verzeichnis sind
 
-**❌ FEHLER: Flash Attention Installation schlägt fehl**
-**✅ LÖSUNG**: 
+### Aktuelle Installation-Reihenfolge (Stand: 2025)
 
-**Lokale Entwicklung (macOS/Windows ohne CUDA):**
 ```bash
-# Flash Attention ist nur für CUDA-GPUs optimiert
-# Für lokale Tests ohne CUDA skip Flash Attention:
-source venv/bin/activate
-pip install torch torchvision torchaudio
-# Flash Attention überspringen - ComfyUI funktioniert ohne
+# 1. Build-Dependencies
+pip install --upgrade pip setuptools wheel ninja packaging
 
-# Alternative: xformers verwenden
-pip install xformers
-```
+# 2. PyTorch mit CUDA 12.4 (separater Index)
+pip install --index-url https://download.pytorch.org/whl/cu124 torch==2.6.0+cu124 torchvision==0.21.0+cu124
 
-**Paperspace/CUDA-Umgebung:**
-```bash
-# Erst CUDA-Version prüfen
-nvcc --version
+# 3. xformers (automatische Versionserkennung)
+pip install --index-url https://download.pytorch.org/whl/cu124 xformers
 
-# PyTorch mit CUDA installieren
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+# 4. ML-Pakete von PyPI (Standard-Index)
+pip install accelerate>=0.27.0 transformers>=4.36.0 safetensors>=0.4.0
 
-# METHODE 1: Pre-built Wheels (EMPFOHLEN)
-# Python 3.12, CUDA 12.4, PyTorch 2.8
+# 5. Flash Attention (NACH PyTorch!)
+# Für Python 3.12:
 pip install https://github.com/mjun0812/flash-attention-prebuild-wheels/releases/download/v0.0.0/flash_attn-2.6.3+cu124torch2.8-cp312-cp312-linux_x86_64.whl
-
-# METHODE 2: Build from source (Falls Pre-built nicht verfügbar)
-# Build-Dependencies installieren
-pip install ninja packaging wheel setuptools
-# Flash Attention mit korrekter CUDA-Umgebung
-export CUDA_HOME=/usr/local/cuda
-pip install flash-attn --no-build-isolation
+# Für andere Versionen: Build from source
 ```
 
 **❌ FEHLER: "chmod: cannot access '│': No such file or directory"**
