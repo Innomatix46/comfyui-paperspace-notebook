@@ -52,15 +52,91 @@ EOF
     # Set proper permissions
     chmod 600 ~/.jupyter/jupyter_lab_config.py
     
-    echo "==> JupyterLab configuration completed"
+    # Configure dark mode as default
+    echo "==> Configuring JupyterLab dark mode..."
+    mkdir -p ~/.jupyter/lab/user-settings/@jupyterlab/apputils-extension
+    mkdir -p ~/.jupyter/lab/user-settings/@jupyterlab/terminal-extension
+    mkdir -p ~/.jupyter/lab/user-settings/@jupyterlab/codemirror-extension
+    mkdir -p ~/.jupyter/lab/user-settings/@jupyterlab/notebook-extension
+    
+    # Set dark theme
+    cat > ~/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings << 'EOF'
+{
+    "theme": "JupyterLab Dark",
+    "theme-scrollbars": true,
+    "overrides": {
+        "code-font-size": "14px",
+        "content-font-size1": "14px",
+        "ui-font-size1": "13px"
+    }
+}
+EOF
+    
+    # Terminal dark theme
+    cat > ~/.jupyter/lab/user-settings/@jupyterlab/terminal-extension/plugin.jupyterlab-settings << 'EOF'
+{
+    "theme": "dark",
+    "fontSize": 14,
+    "lineHeight": 1.2,
+    "fontFamily": "Menlo, Monaco, 'Courier New', monospace"
+}
+EOF
+    
+    # Code editor dark theme
+    cat > ~/.jupyter/lab/user-settings/@jupyterlab/codemirror-extension/plugin.jupyterlab-settings << 'EOF'
+{
+    "theme": "material-darker",
+    "keyMap": "default",
+    "scrollPastEnd": 0.5,
+    "styleActiveLine": true,
+    "styleSelectedText": true,
+    "highlightActiveLine": true,
+    "highlightSelectionMatches": true
+}
+EOF
+    
+    # Notebook settings
+    cat > ~/.jupyter/lab/user-settings/@jupyterlab/notebook-extension/tracker.jupyterlab-settings << 'EOF'
+{
+    "codeCellConfig": {
+        "lineNumbers": true,
+        "lineWrap": "off",
+        "matchBrackets": true,
+        "autoClosingBrackets": true
+    },
+    "markdownCellConfig": {
+        "lineNumbers": false,
+        "lineWrap": "on",
+        "matchBrackets": false,
+        "autoClosingBrackets": false
+    }
+}
+EOF
+    
+    echo "==> JupyterLab configuration completed (Dark mode enabled)"
 }
 
 # Function to start JupyterLab in background
 start_jupyterlab() {
-    echo "==> Starting JupyterLab server in background..."
+    echo "==> Starting JupyterLab server in background with root directory access..."
     
-    # Start JupyterLab in background
-    nohup jupyter lab --config ~/.jupyter/jupyter_lab_config.py > /storage/jupyterlab.log 2>&1 &
+    # Ensure log directory exists
+    mkdir -p /storage
+    
+    # Start JupyterLab with explicit root directory
+    nohup jupyter lab \
+        --allow-root \
+        --ip=0.0.0.0 \
+        --port=8889 \
+        --no-browser \
+        --notebook-dir=/ \
+        --ServerApp.root_dir=/ \
+        --ServerApp.token='' \
+        --ServerApp.password='' \
+        --ServerApp.allow_origin='*' \
+        --ServerApp.disable_check_xsrf=False \
+        --ServerApp.allow_credentials=True \
+        --config ~/.jupyter/jupyter_lab_config.py > /storage/jupyterlab.log 2>&1 &
     
     # Get the process ID
     JUPYTER_PID=$!
@@ -68,6 +144,7 @@ start_jupyterlab() {
     
     echo "==> JupyterLab started with PID: $JUPYTER_PID"
     echo "==> JupyterLab logs available at: /storage/jupyterlab.log"
+    echo "==> Root directory access enabled: /"
     
     # Wait a moment for startup
     sleep 3
@@ -77,7 +154,9 @@ start_jupyterlab() {
         echo "==> JupyterLab Access URLs:"
         echo "   🔗 Main URL: https://$PAPERSPACE_FQDN:8889/"
         echo "   🔗 Direct: https://$PAPERSPACE_FQDN:8889/lab"
+        echo "   📁 Root Access: Full filesystem access from /"
     else
         echo "==> JupyterLab available on port 8889"
+        echo "   📁 Root Access: Full filesystem access from /"
     fi
 }
