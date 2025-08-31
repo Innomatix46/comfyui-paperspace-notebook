@@ -161,6 +161,7 @@ install_dependencies() {
         
         retry_command "pip install --no-cache-dir torchsde" || echo "⚠️ torchsde installation failed"
         retry_command "pip install --no-cache-dir scipy einops" || echo "⚠️ scipy/einops installation failed"
+        retry_command "pip install --no-cache-dir av" || echo "⚠️ av (PyAV) installation failed"
         
         # Install Flash Attention AFTER PyTorch if in CUDA environment
         if command -v nvcc &> /dev/null && [ -d "/usr/local/cuda" ]; then
@@ -215,23 +216,32 @@ install_dependencies() {
             # Clone repository if directory doesn't exist
             if [ ! -d "$target_dir" ]; then
                 echo "==> Cloning $repo_name..."
-                # Try cloning with timeout and fallback for auth issues
-                timeout 60 git clone "$line" "$target_dir" || {
-                    echo "==> Clone failed for $repo_name, trying alternative method..."
-                    # Try without credentials for public repos
-                    timeout 60 git -c http.sslVerify=false clone "$line" "$target_dir" || {
+                # Clone directly to target directory
+                git clone "$line" "$target_dir" || {
+                    echo "==> Clone failed for $repo_name, trying with timeout..."
+                    timeout 60 git clone "$line" "$target_dir" || {
                         echo "==> Warning: Could not clone $repo_name, skipping..."
                         continue
                     }
                 }
                 echo "==> Successfully cloned $repo_name"
-                
-                # Check for and install node-specific requirements
-                if [ -f "$target_dir/requirements.txt" ]; then
-                    echo "==> Installing requirements for $repo_name..."
-                    pip install -r "$target_dir/requirements.txt"
-                    echo "==> Requirements for $repo_name installed successfully"
-                fi
+            else
+                echo "==> $repo_name already exists, updating..."
+                cd "$target_dir" && git pull || echo "⚠️ Could not update $repo_name"
+                cd - > /dev/null
+            fi
+            
+            # ALWAYS install/update requirements for each custom node
+            if [ -f "$target_dir/requirements.txt" ]; then
+                echo "==> Installing requirements for $repo_name..."
+                pip install -r "$target_dir/requirements.txt" || {
+                    echo "⚠️ Some requirements for $repo_name failed, trying with upgrade..."
+                    pip install -U -r "$target_dir/requirements.txt" || echo "⚠️ Requirements installation had issues"
+                }
+                echo "==> Requirements processing completed for $repo_name"
+            else
+                echo "==> No requirements.txt found for $repo_name"
+            fi
             else
                 echo "==> Custom node $repo_name already exists, skipping clone"
             fi

@@ -19,6 +19,13 @@ pip install torchsde
 echo "==> Installing additional dependencies..."
 pip install scipy einops
 
+echo "==> Installing av (PyAV) for video support..."
+pip install av
+
+echo "==> Installing additional ComfyUI dependencies..."
+# Common missing packages that cause issues
+pip install opencv-python-headless matplotlib scikit-image
+
 # Verify installations
 echo "==> Verifying installations..."
 python -c "import torchaudio; print(f'✅ torchaudio {torchaudio.__version__} installed')" || echo "❌ torchaudio installation failed"
