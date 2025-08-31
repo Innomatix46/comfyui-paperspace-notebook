@@ -25,6 +25,8 @@ pip install av
 echo "==> Installing additional ComfyUI dependencies..."
 # Common missing packages that cause issues
 pip install opencv-python-headless matplotlib scikit-image
+pip install audio-separator blend-modes LangSegment onnx scepter albucore==0.0.16
+pip install sageattention blinker mmcv
 
 # Verify installations
 echo "==> Verifying installations..."
