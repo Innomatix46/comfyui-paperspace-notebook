@@ -5,7 +5,8 @@
 
 https://github.com/ltdrdata/ComfyUI-Manager
 https://github.com/ltdrdata/ComfyUI-Impact-Pack
-https://github.com/Gourieff/ComfyUI-ReActor-Node
+# Temporarily disabled due to git authentication issues - install manually via Manager
+# https://github.com/Gourieff/ComfyUI-ReActor-Node
 https://github.com/cubiq/ComfyUI_IPAdapter_plus
 https://github.com/WASasquatch/was-node-suite-comfyui
 https://github.com/rgthree/rgthree-comfy
