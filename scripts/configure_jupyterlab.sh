@@ -123,7 +123,15 @@ start_jupyterlab() {
     # Ensure log directory exists
     mkdir -p /storage
     
-    # Start JupyterLab with explicit root directory
+    # FORCE change to root directory before starting
+    cd /
+    
+    # Kill any existing JupyterLab
+    pkill -f jupyter-lab 2>/dev/null || true
+    pkill -f "jupyter lab" 2>/dev/null || true
+    sleep 2
+    
+    # Start JupyterLab with maximum root forcing
     nohup jupyter lab \
         --allow-root \
         --ip=0.0.0.0 \
@@ -131,11 +139,16 @@ start_jupyterlab() {
         --no-browser \
         --notebook-dir=/ \
         --ServerApp.root_dir=/ \
+        --ServerApp.preferred_dir=/ \
+        --ContentsManager.root_dir=/ \
+        --FileContentsManager.root_dir=/ \
         --ServerApp.token='' \
         --ServerApp.password='' \
         --ServerApp.allow_origin='*' \
         --ServerApp.disable_check_xsrf=False \
         --ServerApp.allow_credentials=True \
+        --ServerApp.terminals_enabled=True \
+        --TerminalManager.cwd=/ \
         --config ~/.jupyter/jupyter_lab_config.py > /storage/jupyterlab.log 2>&1 &
     
     # Get the process ID
@@ -152,11 +165,15 @@ start_jupyterlab() {
     # Display access information
     if [ -n "$PAPERSPACE_FQDN" ]; then
         echo "==> JupyterLab Access URLs:"
-        echo "   🔗 Main URL: https://$PAPERSPACE_FQDN:8889/"
-        echo "   🔗 Direct: https://$PAPERSPACE_FQDN:8889/lab"
-        echo "   📁 Root Access: Full filesystem access from /"
+        echo "   🔗 Main URL: https://$PAPERSPACE_FQDN:8889/lab?path=/"
+        echo "   🔗 Alternative: https://$PAPERSPACE_FQDN:8889/lab/tree/"
+        echo "   📁 Root Access: Full filesystem from /"
+        echo ""
+        echo "   ⚠️ IMPORTANT: Add ?path=/ to force root directory"
+        echo "   If not at root, navigate manually: Click folder icon → type / → Enter"
     else
         echo "==> JupyterLab available on port 8889"
-        echo "   📁 Root Access: Full filesystem access from /"
+        echo "   🔗 URL: http://localhost:8889/lab?path=/"
+        echo "   📁 Root Access: Full filesystem from /"
     fi
 }
