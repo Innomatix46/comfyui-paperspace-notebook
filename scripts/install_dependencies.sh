@@ -122,25 +122,31 @@ install_dependencies() {
             retry_command "pip install -U --no-cache-dir xformers"
         }
         
+        # CRITICAL: Install NumPy 1.x FIRST to prevent conflicts
+        echo "==> Installing NumPy 1.x (preventing 2.x conflicts)..."
+        pip uninstall -y numpy 2>/dev/null || true
+        retry_command "pip install --no-cache-dir 'numpy<2.0' 'numpy==1.26.4'"
+        
         # Install remaining packages from PyPI (default index)
         echo "==> Installing remaining ML packages from PyPI..."
         
-        # Install in batches for better error handling
+        # Install in batches for better error handling with version constraints
         ML_PACKAGES=(
             "accelerate>=0.27.0"
-            "transformers>=4.36.0"
+            "transformers==4.36.2"  # Fixed version to prevent pytree error
             "safetensors>=0.4.0"
             "bitsandbytes>=0.41.0"
         )
         
         for package in "${ML_PACKAGES[@]}"; do
-            retry_command "pip install -U --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
+            retry_command "pip install --no-cache-dir $package" || echo "⚠️ Failed to install $package, continuing..."
         done
         
-        # Essential packages
+        # Essential packages with version constraints
         ESSENTIAL_PACKAGES=(
             "pillow>=10.0.0"
-            "numpy>=1.24.0"
+            "scipy<1.14"  # Prevent scipy issues
+            "aiofiles>=22.1.0,<23"  # Fix ypy-websocket conflict
             "requests>=2.28.0"
             "tqdm>=4.64.0"
             "gpustat>=1.0.0"
