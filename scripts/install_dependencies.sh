@@ -57,7 +57,11 @@ install_dependencies() {
         PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
         echo "==> Detected Python $PYTHON_VERSION"
         
-        # Install Flash Attention if in CUDA environment
+        # Install main requirements FIRST (includes PyTorch)
+        echo "==> Installing PyTorch and core dependencies first..."
+        pip install -r configs/python_requirements.txt
+        
+        # Install Flash Attention AFTER PyTorch if in CUDA environment
         if command -v nvcc &> /dev/null && [ -d "/usr/local/cuda" ]; then
             echo "==> CUDA environment detected - installing Flash Attention..."
             
@@ -78,9 +82,6 @@ install_dependencies() {
             echo "==> Non-CUDA environment detected - skipping Flash Attention"
             echo "==> Flash Attention wird in Paperspace automatisch installiert"
         fi
-        
-        # Install main requirements
-        pip install -r configs/python_requirements.txt
         echo "==> Python packages installed successfully"
     else
         echo "==> Warning: configs/python_requirements.txt not found, skipping Python package installation"
