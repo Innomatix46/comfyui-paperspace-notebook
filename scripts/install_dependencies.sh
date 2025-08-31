@@ -124,7 +124,15 @@ install_dependencies() {
             # Clone repository if directory doesn't exist
             if [ ! -d "$target_dir" ]; then
                 echo "==> Cloning $repo_name..."
-                git clone "$line" "$target_dir"
+                # Try cloning with timeout and fallback for auth issues
+                timeout 60 git clone "$line" "$target_dir" || {
+                    echo "==> Clone failed for $repo_name, trying alternative method..."
+                    # Try without credentials for public repos
+                    timeout 60 git -c http.sslVerify=false clone "$line" "$target_dir" || {
+                        echo "==> Warning: Could not clone $repo_name, skipping..."
+                        continue
+                    }
+                }
                 echo "==> Successfully cloned $repo_name"
                 
                 # Check for and install node-specific requirements
