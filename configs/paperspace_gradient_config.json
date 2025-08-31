@@ -1,0 +1,135 @@
+{
+  "paperspace_gradient_configurations": {
+    "recommended": {
+      "workspace": {
+        "url": "https://github.com/Innomatix46/comfyui-paperspace-notebook.git",
+        "ref": "master",
+        "username": "",
+        "password": ""
+      },
+      "container": {
+        "name": "paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202",
+        "registry_username": "",
+        "registry_password": ""
+      },
+      "command": "PIP_DISABLE_PIP_VERSION_CHECK=1 bash -c \"if [ ! -d /notebooks/comfyui-paperspace-notebook ]; then cd /notebooks && git clone https://github.com/Innomatix46/comfyui-paperspace-notebook.git; fi && cd /notebooks/comfyui-paperspace-notebook && ./run.sh & jupyter lab --allow-root --ip=0.0.0.0 --no-browser --ServerApp.trust_xheaders=True --ServerApp.disable_check_xsrf=False --ServerApp.allow_remote_access=True --ServerApp.allow_origin='*' --ServerApp.allow_credentials=True\"",
+      "machine_type": "A6000",
+      "auto_shutdown": 6
+    },
+    "docker_optimized": {
+      "workspace": {
+        "url": "https://github.com/Innomatix46/comfyui-paperspace-notebook.git",
+        "ref": "master"
+      },
+      "container": {
+        "name": "paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202"
+      },
+      "command": "cd /notebooks && git clone https://github.com/Innomatix46/comfyui-paperspace-notebook.git 2>/dev/null; cd comfyui-paperspace-notebook && DOCKER_MODE=true ./run.sh",
+      "machine_type": "A6000",
+      "auto_shutdown": 6
+    },
+    "minimal": {
+      "workspace": {
+        "url": "https://github.com/Innomatix46/comfyui-paperspace-notebook.git",
+        "ref": "master"
+      },
+      "container": {
+        "name": "paperspace/gradient-base:latest"
+      },
+      "command": "cd /notebooks && ./comfyui-paperspace-notebook/run.sh",
+      "machine_type": "RTX4000",
+      "auto_shutdown": 1
+    },
+    "container_alternatives": [
+      {
+        "name": "paperspace/gradient-base:pt210-tf214-cuda121-py310-20240101",
+        "description": "CUDA 12.1 - More stable for ComfyUI",
+        "python": "3.10",
+        "pytorch": "2.1.0",
+        "cuda": "12.1"
+      },
+      {
+        "name": "paperspace/gradient-base:pt211-tf215-cudatk120-py311-20240202",
+        "description": "CUDA 12.0 - Latest stable",
+        "python": "3.11",
+        "pytorch": "2.1.1",
+        "cuda": "12.0"
+      },
+      {
+        "name": "paperspace/gradient-base:latest",
+        "description": "Latest version - May have breaking changes",
+        "python": "latest",
+        "pytorch": "latest",
+        "cuda": "latest"
+      }
+    ],
+    "gpu_recommendations": {
+      "A6000": {
+        "vram": "48GB",
+        "cost": "$$$",
+        "performance": "Excellent",
+        "availability": "Good",
+        "recommended_for": ["Large models", "SDXL", "Flux", "Chroma", "Production"]
+      },
+      "A100": {
+        "vram": "40GB",
+        "cost": "$$$$",
+        "performance": "Best",
+        "availability": "Limited",
+        "recommended_for": ["Fastest inference", "Training", "Research"]
+      },
+      "RTX4000": {
+        "vram": "16GB",
+        "cost": "$$",
+        "performance": "Good",
+        "availability": "Very Good",
+        "recommended_for": ["SD1.5", "Small SDXL", "Testing"]
+      },
+      "P5000": {
+        "vram": "16GB",
+        "cost": "$",
+        "performance": "Moderate",
+        "availability": "Excellent",
+        "recommended_for": ["Budget", "SD1.5", "Learning"]
+      },
+      "Free-P5000": {
+        "vram": "16GB",
+        "cost": "Free",
+        "performance": "Moderate",
+        "availability": "Very Limited",
+        "recommended_for": ["Testing", "Learning", "Small models"]
+      }
+    },
+    "startup_commands": {
+      "standard": "./run.sh",
+      "docker": "DOCKER_MODE=true ./run.sh",
+      "debug": "DEBUG=true ./run.sh",
+      "minimal": "MINIMAL=true ./run.sh",
+      "with_tensorboard": "./run.sh && tensorboard --logdir=/notebooks/comfyui-paperspace-notebook/ComfyUI/logs --host=0.0.0.0 --port=6006",
+      "with_jupyter": "jupyter lab --allow-root --ip=0.0.0.0 --no-browser --ServerApp.trust_xheaders=True & ./run.sh"
+    },
+    "environment_variables": {
+      "PAPERSPACE_CLUSTER_ID": "auto",
+      "PAPERSPACE_FQDN": "auto",
+      "PYTHONUNBUFFERED": "1",
+      "PYTORCH_CUDA_ALLOC_CONF": "max_split_size_mb:512",
+      "CUDA_LAUNCH_BLOCKING": "0",
+      "HF_HOME": "/storage/huggingface",
+      "TORCH_HOME": "/storage/torch",
+      "TRANSFORMERS_CACHE": "/storage/transformers"
+    },
+    "storage_paths": {
+      "persistent": "/storage",
+      "temporary": "/notebooks",
+      "models": "/storage/models",
+      "outputs": "/storage/outputs",
+      "cache": "/storage/cache",
+      "configs": "/notebooks/comfyui-paperspace-notebook/configs"
+    },
+    "access_urls": {
+      "comfyui": "https://[NOTEBOOK_ID]-8188.paperspacegradient.com",
+      "tensorboard": "https://[NOTEBOOK_ID]-6006.paperspacegradient.com",
+      "jupyter": "https://[NOTEBOOK_ID].paperspacegradient.com/lab"
+    }
+  }
+}
