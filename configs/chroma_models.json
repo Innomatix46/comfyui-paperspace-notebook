@@ -1,0 +1,87 @@
+{
+  "chroma_models": {
+    "unet": [
+      {
+        "name": "Chroma v48 (Latest)",
+        "url": "https://huggingface.co/lodestones/Chroma/resolve/main/chroma-unlocked-v48.safetensors",
+        "size": "24GB",
+        "description": "Latest Chroma model with best quality"
+      },
+      {
+        "name": "Chroma v48 Detail Calibrated",
+        "url": "https://huggingface.co/lodestones/Chroma/resolve/main/chroma-unlocked-v48-detail-calibrated.safetensors",
+        "size": "24GB",
+        "description": "Enhanced detail version of v48"
+      },
+      {
+        "name": "Chroma v29.5",
+        "url": "https://huggingface.co/lodestones/Chroma/resolve/main/chroma-unlocked-v29.5.safetensors",
+        "size": "24GB",
+        "description": "Stable version with good compatibility"
+      }
+    ],
+    "vae": {
+      "name": "Chroma VAE",
+      "url": "https://huggingface.co/lodestones/Chroma/resolve/main/ae.safetensors",
+      "size": "335MB",
+      "required": true
+    },
+    "text_encoders": [
+      {
+        "name": "T5-XXL FP8 Scaled",
+        "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn_scaled.safetensors",
+        "size": "4.9GB",
+        "description": "Memory efficient text encoder",
+        "recommended": true
+      },
+      {
+        "name": "T5-XXL FP16",
+        "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors",
+        "size": "9.5GB",
+        "description": "Full precision text encoder"
+      }
+    ],
+    "loras": [
+      {
+        "name": "RealFine",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma-RealFine_lora_rank_64-bf16.safetensors",
+        "description": "Realistic enhancement"
+      },
+      {
+        "name": "NSFW Porn",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma_NSFW_Porn_lora_64-bf16.safetensors",
+        "description": "Adult content"
+      },
+      {
+        "name": "Turbo",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma-Turbo_lora_rank_64-bf16.safetensors",
+        "description": "Fast generation"
+      },
+      {
+        "name": "Hyper 8-steps",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Hyper-CHROMA-8steps-lora-minimal.safetensors",
+        "description": "Ultra-fast 8 step generation"
+      },
+      {
+        "name": "Hyper Turbo 16-steps",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Hyper-Chroma-Turbo-Alpha-16steps-lora.safetensors",
+        "description": "Fast 16 step generation"
+      },
+      {
+        "name": "Chrome Dup NSFW",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/chromedup_NSFW_LoRA.safetensors",
+        "description": "Alternative NSFW model"
+      },
+      {
+        "name": "Chroma2Schnell",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma2schnell_lora_rank_64-bf16.safetensors",
+        "description": "Schnell-style fast generation"
+      },
+      {
+        "name": "Realistic x",
+        "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/chroma_x_realistic_r64-bf16.safetensors",
+        "description": "Enhanced realism"
+      }
+    ]
+  }
+}
