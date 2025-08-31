@@ -1,6 +1,7 @@
 #!/bin/bash
 # download_models.sh - Download and link ComfyUI models
 # This script handles model downloads and creates proper symlinks for ComfyUI
+# Enhanced with universal model downloader integration
 
 download_models() {
     echo "==> Starting model download and linking process..."
@@ -114,4 +115,12 @@ download_models() {
     fi
     
     echo "==> Model linking completed successfully"
+    
+    # Suggest using the new universal downloader
+    if [ -f "scripts/universal_model_downloader.py" ]; then
+        echo ""
+        echo "💡 TIP: Use the enhanced Universal Model Downloader for more features:"
+        echo "   python3 scripts/universal_model_downloader.py --interactive"
+        echo "   Features: GGUF support, smart recommendations, progress tracking, resume capability"
+    fi
 }

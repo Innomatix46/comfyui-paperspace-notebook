@@ -1,0 +1,39 @@
+# Universal Model Downloader Requirements
+# Core dependencies for enhanced model downloading and management
+
+# === CORE DOWNLOAD DEPENDENCIES ===
+aiohttp>=3.8.0
+aiofiles>=23.0.0
+tqdm>=4.64.0
+requests>=2.28.0
+
+# === FORMAT SUPPORT ===
+safetensors>=0.4.0
+
+# === OPTIONAL FORMAT CONVERSION ===
+# Uncomment if you want format conversion features
+# torch>=2.0.0
+# transformers>=4.30.0
+# llama-cpp-python>=0.2.0
+
+# === DATA PROCESSING ===
+numpy>=1.21.0
+Pillow>=9.0.0
+
+# === UTILITIES ===
+pathlib2>=2.3.0
+dataclasses>=0.6.0; python_version<"3.7"
+
+# === OPTIONAL PERFORMANCE ===
+# Uncomment for better performance
+# uvloop>=0.17.0; sys_platform != "win32"
+# orjson>=3.8.0
+
+# === SYSTEM INTEGRATION ===
+psutil>=5.9.0
+
+# Notes:
+# - Core dependencies are minimal for basic functionality
+# - Format conversion requires PyTorch (large download)
+# - llama-cpp-python enables GGUF conversion
+# - aria2c is installed separately via package manager for faster downloads

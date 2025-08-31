@@ -1,0 +1,765 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "last_updated": "2025-01-31T13:00:00Z",
+    "description": "Universal model catalog supporting GGUF, SafeTensors, and other formats",
+    "total_models": 47,
+    "supported_formats": ["safetensors", "gguf", "bin", "pt", "ckpt"]
+  },
+  "categories": {
+    "checkpoints": {
+      "description": "Main diffusion models - the core models for image generation",
+      "storage_priority": 1,
+      "models": {
+        "sdxl_base": {
+          "safetensors": {
+            "name": "Stable Diffusion XL Base 1.0",
+            "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors",
+            "format": "safetensors",
+            "size": "6.9 GB",
+            "size_bytes": 7400000000,
+            "description": "Base SDXL model optimized for A6000 GPU with 48GB VRAM",
+            "category": "checkpoints",
+            "tags": ["xl", "base", "stable", "foundation"],
+            "use_case": ["general", "high-quality", "foundation"],
+            "performance_notes": "Optimized for A6000 48GB VRAM with Flash Attention support",
+            "recommended": true,
+            "hash_sha256": "31e35c80fc4829d14f90153f4c74cd59c90b779f6afe05a74cd6120b893ca7f5"
+          },
+          "gguf": {
+            "name": "Stable Diffusion XL Base 1.0 GGUF Q4_0",
+            "url": "https://huggingface.co/city96/SDXL-GGUF/resolve/main/sd_xl_base_1.0-q4_0.gguf",
+            "format": "gguf",
+            "size": "3.5 GB",
+            "size_bytes": 3700000000,
+            "description": "Quantized SDXL model for memory-constrained environments",
+            "category": "checkpoints",
+            "tags": ["xl", "base", "quantized", "gguf", "q4_0"],
+            "use_case": ["memory-constrained", "fast-inference", "mobile"],
+            "performance_notes": "4-bit quantization with minimal quality loss",
+            "requirements": ["gguf-loader"]
+          }
+        },
+        "sdxl_refiner": {
+          "safetensors": {
+            "name": "Stable Diffusion XL Refiner 1.0",
+            "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0/resolve/main/sd_xl_refiner_1.0.safetensors",
+            "format": "safetensors",
+            "size": "6.1 GB",
+            "size_bytes": 6600000000,
+            "description": "SDXL refiner model for enhanced detail and quality",
+            "category": "checkpoints",
+            "tags": ["xl", "refiner", "enhancement", "detail"],
+            "use_case": ["refinement", "high-quality", "post-processing"],
+            "performance_notes": "Use after base model for quality enhancement"
+          }
+        },
+        "chroma_v48": {
+          "safetensors": {
+            "name": "Chroma v48 Latest",
+            "url": "https://huggingface.co/lodestones/Chroma/resolve/main/chroma-unlocked-v48.safetensors",
+            "format": "safetensors",
+            "size": "24 GB",
+            "size_bytes": 25000000000,
+            "description": "Latest Chroma model with best quality and realism",
+            "category": "checkpoints",
+            "tags": ["chroma", "latest", "high-quality", "realistic"],
+            "use_case": ["professional", "high-quality", "realistic"],
+            "performance_notes": "Requires significant VRAM (24GB+), use with A6000",
+            "recommended": true
+          }
+        },
+        "chroma_v48_detail": {
+          "safetensors": {
+            "name": "Chroma v48 Detail Calibrated",
+            "url": "https://huggingface.co/lodestones/Chroma/resolve/main/chroma-unlocked-v48-detail-calibrated.safetensors",
+            "format": "safetensors",
+            "size": "24 GB", 
+            "size_bytes": 25000000000,
+            "description": "Enhanced detail version of Chroma v48",
+            "category": "checkpoints",
+            "tags": ["chroma", "detail", "calibrated", "enhanced"],
+            "use_case": ["detail-work", "professional", "fine-art"],
+            "performance_notes": "Specialized for high-detail generation"
+          }
+        },
+        "flux_dev": {
+          "safetensors": {
+            "name": "FLUX.1 Dev",
+            "url": "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors",
+            "format": "safetensors",
+            "size": "23.8 GB",
+            "size_bytes": 25500000000,
+            "description": "Open-source text-to-image model with excellent prompt following",
+            "category": "checkpoints",
+            "tags": ["flux", "dev", "text-to-image", "prompt-following"],
+            "use_case": ["text-following", "creative", "open-source"],
+            "performance_notes": "Excellent prompt adherence, requires substantial VRAM"
+          }
+        },
+        "flux_schnell": {
+          "safetensors": {
+            "name": "FLUX.1 Schnell",
+            "url": "https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors",
+            "format": "safetensors", 
+            "size": "23.8 GB",
+            "size_bytes": 25500000000,
+            "description": "Fast inference version of FLUX.1 for quick generation",
+            "category": "checkpoints",
+            "tags": ["flux", "schnell", "fast", "quick"],
+            "use_case": ["fast-generation", "prototyping", "batch"],
+            "performance_notes": "Optimized for speed over quality"
+          },
+          "gguf": {
+            "name": "FLUX.1 Schnell GGUF Q4_0",
+            "url": "https://huggingface.co/city96/FLUX.1-schnell-gguf/resolve/main/flux1-schnell-q4_0.gguf",
+            "format": "gguf",
+            "size": "12 GB",
+            "size_bytes": 12800000000,
+            "description": "Quantized FLUX.1 Schnell for memory efficiency",
+            "category": "checkpoints",
+            "tags": ["flux", "schnell", "gguf", "quantized", "q4_0"],
+            "use_case": ["memory-constrained", "fast-generation"],
+            "performance_notes": "Balanced quality and memory usage"
+          }
+        }
+      }
+    },
+    "vae": {
+      "description": "Variational Auto-Encoders for latent space encoding/decoding",
+      "storage_priority": 2,
+      "models": {
+        "sdxl_vae": {
+          "safetensors": {
+            "name": "SDXL VAE",
+            "url": "https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors",
+            "format": "safetensors",
+            "size": "335 MB",
+            "size_bytes": 351000000,
+            "description": "Essential VAE for SDXL models with improved color accuracy",
+            "category": "vae",
+            "tags": ["vae", "sdxl", "essential", "color-accuracy"],
+            "use_case": ["sdxl-required", "color-correction"],
+            "recommended": true
+          }
+        },
+        "chroma_vae": {
+          "safetensors": {
+            "name": "Chroma VAE",
+            "url": "https://huggingface.co/lodestones/Chroma/resolve/main/ae.safetensors",
+            "format": "safetensors",
+            "size": "335 MB",
+            "size_bytes": 351000000,
+            "description": "VAE specifically trained for Chroma models",
+            "category": "vae",
+            "tags": ["vae", "chroma", "required", "optimized"],
+            "use_case": ["chroma-required", "chroma-optimized"],
+            "recommended": true
+          }
+        },
+        "mse_vae": {
+          "safetensors": {
+            "name": "MSE VAE",
+            "url": "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors",
+            "format": "safetensors",
+            "size": "335 MB",
+            "size_bytes": 351000000,
+            "description": "Alternative VAE with MSE loss for different aesthetic",
+            "category": "vae",
+            "tags": ["vae", "mse", "alternative", "aesthetic"],
+            "use_case": ["artistic", "alternative-aesthetic"]
+          }
+        },
+        "flux_vae": {
+          "safetensors": {
+            "name": "FLUX VAE",
+            "url": "https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors",
+            "format": "safetensors",
+            "size": "335 MB",
+            "size_bytes": 351000000,
+            "description": "VAE for FLUX models",
+            "category": "vae",
+            "tags": ["vae", "flux", "required"],
+            "use_case": ["flux-required"],
+            "recommended": true
+          }
+        }
+      }
+    },
+    "text_encoders": {
+      "description": "Text encoding models for prompt understanding",
+      "storage_priority": 3,
+      "models": {
+        "t5xxl_fp8": {
+          "safetensors": {
+            "name": "T5-XXL FP8 Scaled",
+            "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn_scaled.safetensors",
+            "format": "safetensors",
+            "size": "4.9 GB",
+            "size_bytes": 5200000000,
+            "description": "Memory efficient T5-XXL text encoder with FP8 quantization",
+            "category": "text_encoders",
+            "tags": ["text-encoder", "t5", "fp8", "memory-efficient"],
+            "use_case": ["memory-constrained", "flux-compatible", "efficient"],
+            "recommended": true
+          }
+        },
+        "t5xxl_fp16": {
+          "safetensors": {
+            "name": "T5-XXL FP16",
+            "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp16.safetensors", 
+            "format": "safetensors",
+            "size": "9.5 GB",
+            "size_bytes": 10200000000,
+            "description": "Full precision T5-XXL text encoder for maximum quality",
+            "category": "text_encoders",
+            "tags": ["text-encoder", "t5", "fp16", "full-precision"],
+            "use_case": ["maximum-quality", "professional"]
+          }
+        },
+        "t5xxl_gguf": {
+          "gguf": {
+            "name": "T5-XXL GGUF Q4_0",
+            "url": "https://huggingface.co/city96/t5-v1_1-xxl-encoder-gguf/resolve/main/t5-v1_1-xxl-encoder-q4_0.gguf",
+            "format": "gguf",
+            "size": "2.5 GB",
+            "size_bytes": 2600000000,
+            "description": "Quantized T5-XXL text encoder for minimal memory usage",
+            "category": "text_encoders",
+            "tags": ["text-encoder", "t5", "gguf", "quantized", "q4_0"],
+            "use_case": ["ultra-low-memory", "mobile", "edge"],
+            "performance_notes": "Significant memory savings with minimal quality loss"
+          }
+        },
+        "clip_l": {
+          "safetensors": {
+            "name": "CLIP-L Text Encoder",
+            "url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors",
+            "format": "safetensors", 
+            "size": "246 MB",
+            "size_bytes": 258000000,
+            "description": "CLIP Large text encoder for FLUX models",
+            "category": "text_encoders",
+            "tags": ["text-encoder", "clip", "flux", "required"],
+            "use_case": ["flux-required"],
+            "recommended": true
+          }
+        }
+      }
+    },
+    "loras": {
+      "description": "LoRA adaptation models for style and enhancement",
+      "storage_priority": 4,
+      "models": {
+        "realfine": {
+          "safetensors": {
+            "name": "RealFine LoRA",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma-RealFine_lora_rank_64-bf16.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Realistic enhancement LoRA for photorealistic results",
+            "category": "loras",
+            "tags": ["lora", "realistic", "photorealistic", "enhancement"],
+            "use_case": ["realism", "portraits", "photography"],
+            "recommended": true
+          }
+        },
+        "turbo": {
+          "safetensors": {
+            "name": "Turbo LoRA",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma-Turbo_lora_rank_64-bf16.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Speed enhancement LoRA for faster generation",
+            "category": "loras",
+            "tags": ["lora", "speed", "fast-generation", "turbo"],
+            "use_case": ["fast-generation", "prototyping", "batch-processing"],
+            "recommended": true
+          }
+        },
+        "hyper_8step": {
+          "safetensors": {
+            "name": "Hyper 8-steps",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Hyper-CHROMA-8steps-lora-minimal.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Ultra-fast 8 step generation LoRA",
+            "category": "loras",
+            "tags": ["lora", "hyper", "8-steps", "ultra-fast"],
+            "use_case": ["ultra-fast", "real-time", "interactive"]
+          }
+        },
+        "hyper_turbo_16step": {
+          "safetensors": {
+            "name": "Hyper Turbo 16-steps",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Hyper-Chroma-Turbo-Alpha-16steps-lora.safetensors",
+            "format": "safetensors", 
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Balanced speed and quality with 16 steps",
+            "category": "loras",
+            "tags": ["lora", "hyper", "turbo", "16-steps", "balanced"],
+            "use_case": ["balanced-speed", "production"]
+          }
+        },
+        "chroma2schnell": {
+          "safetensors": {
+            "name": "Chroma2Schnell",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma2schnell_lora_rank_64-bf16.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Schnell-style fast generation adapter",
+            "category": "loras",
+            "tags": ["lora", "schnell", "adapter", "fast"],
+            "use_case": ["schnell-style", "fast-generation"]
+          }
+        },
+        "realistic_x": {
+          "safetensors": {
+            "name": "Realistic X",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/chroma_x_realistic_r64-bf16.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Enhanced realism with X-factor improvements",
+            "category": "loras",
+            "tags": ["lora", "realistic", "enhanced", "x-factor"],
+            "use_case": ["ultra-realism", "professional-photography"]
+          }
+        },
+        "nsfw_porn": {
+          "safetensors": {
+            "name": "NSFW Adult Content",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/Chroma_NSFW_Porn_lora_64-bf16.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Adult content generation LoRA",
+            "category": "loras",
+            "tags": ["lora", "nsfw", "adult", "mature"],
+            "use_case": ["adult-content", "mature-audiences"],
+            "requirements": ["age-verification", "content-warning"]
+          }
+        },
+        "chrome_dup_nsfw": {
+          "safetensors": {
+            "name": "Chrome Dup NSFW",
+            "url": "https://huggingface.co/silveroxides/Chroma-LoRA-Experiments/resolve/main/chromedup_NSFW_LoRA.safetensors",
+            "format": "safetensors",
+            "size": "294 MB",
+            "size_bytes": 308000000,
+            "description": "Alternative NSFW content generation model",
+            "category": "loras", 
+            "tags": ["lora", "nsfw", "alternative", "adult"],
+            "use_case": ["adult-content", "alternative-nsfw"],
+            "requirements": ["age-verification", "content-warning"]
+          }
+        }
+      }
+    },
+    "controlnet": {
+      "description": "ControlNet models for guided generation and precise control",
+      "storage_priority": 5,
+      "models": {
+        "canny_sdxl": {
+          "safetensors": {
+            "name": "ControlNet Canny SDXL",
+            "url": "https://huggingface.co/diffusers/controlnet-canny-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors",
+            "format": "safetensors",
+            "size": "2.5 GB",
+            "size_bytes": 2600000000,
+            "description": "Canny edge detection ControlNet for SDXL",
+            "category": "controlnet",
+            "tags": ["controlnet", "canny", "edges", "sdxl"],
+            "use_case": ["edge-guidance", "structure-control", "line-art"],
+            "recommended": true
+          }
+        },
+        "depth_sdxl": {
+          "safetensors": {
+            "name": "ControlNet Depth SDXL",
+            "url": "https://huggingface.co/diffusers/controlnet-depth-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors",
+            "format": "safetensors",
+            "size": "2.5 GB",
+            "size_bytes": 2600000000,
+            "description": "Depth-based ControlNet for 3D-aware generation",
+            "category": "controlnet",
+            "tags": ["controlnet", "depth", "3d", "sdxl"],
+            "use_case": ["depth-guidance", "3d-aware", "spatial-control"]
+          }
+        },
+        "openpose_sdxl": {
+          "safetensors": {
+            "name": "ControlNet OpenPose SDXL",
+            "url": "https://huggingface.co/thibaud/controlnet-openpose-sdxl-1.0/resolve/main/diffusion_pytorch_model.safetensors",
+            "format": "safetensors",
+            "size": "2.5 GB", 
+            "size_bytes": 2600000000,
+            "description": "Human pose detection and control",
+            "category": "controlnet",
+            "tags": ["controlnet", "openpose", "pose", "human"],
+            "use_case": ["pose-control", "human-figures", "anatomy"]
+          }
+        },
+        "qr_code": {
+          "safetensors": {
+            "name": "ControlNet QR Code",
+            "url": "https://huggingface.co/DionTimmer/controlnet_qrcode-control_v1p_sd15/resolve/main/diffusion_pytorch_model.safetensors",
+            "format": "safetensors",
+            "size": "1.4 GB",
+            "size_bytes": 1500000000,
+            "description": "QR code and pattern integration",
+            "category": "controlnet",
+            "tags": ["controlnet", "qr-code", "pattern", "integration"],
+            "use_case": ["qr-integration", "pattern-embedding", "functional-art"]
+          }
+        },
+        "inpaint_sdxl": {
+          "safetensors": {
+            "name": "ControlNet Inpaint SDXL",
+            "url": "https://huggingface.co/destitech/controlnet-inpaint-dreamer-sdxl/resolve/main/diffusion_pytorch_model.safetensors",
+            "format": "safetensors",
+            "size": "2.5 GB",
+            "size_bytes": 2600000000,
+            "description": "Inpainting and image editing control",
+            "category": "controlnet",
+            "tags": ["controlnet", "inpaint", "editing", "restoration"],
+            "use_case": ["inpainting", "image-editing", "restoration"]
+          }
+        }
+      }
+    },
+    "upscalers": {
+      "description": "Image upscaling and enhancement models",
+      "storage_priority": 6,
+      "models": {
+        "esrgan_4x": {
+          "safetensors": {
+            "name": "Real-ESRGAN 4x",
+            "url": "https://huggingface.co/ai-forever/Real-ESRGAN/resolve/main/RealESRGAN_x4plus.safetensors",
+            "format": "safetensors",
+            "size": "67 MB",
+            "size_bytes": 70000000,
+            "description": "4x upscaling model for photo enhancement",
+            "category": "upscalers",
+            "tags": ["upscaler", "4x", "esrgan", "photo"],
+            "use_case": ["upscaling", "enhancement", "photo-restoration"],
+            "recommended": true
+          }
+        },
+        "esrgan_anime_4x": {
+          "safetensors": {
+            "name": "Real-ESRGAN Anime 4x",
+            "url": "https://huggingface.co/ai-forever/Real-ESRGAN/resolve/main/RealESRGAN_x4plus_anime_6B.safetensors",
+            "format": "safetensors",
+            "size": "18 MB",
+            "size_bytes": 19000000,
+            "description": "4x upscaling specialized for anime and illustrations",
+            "category": "upscalers",
+            "tags": ["upscaler", "4x", "anime", "illustration"],
+            "use_case": ["anime-upscaling", "illustration-enhancement"],
+            "recommended": true
+          }
+        },
+        "ldsr": {
+          "safetensors": {
+            "name": "LDSR Upscaler",
+            "url": "https://huggingface.co/CompVis/ldm-super-resolution-4x-openimages/resolve/main/model.safetensors",
+            "format": "safetensors",
+            "size": "2.0 GB",
+            "size_bytes": 2100000000,
+            "description": "Latent Diffusion Super Resolution 4x upscaler",
+            "category": "upscalers",
+            "tags": ["upscaler", "ldsr", "latent-diffusion", "4x"],
+            "use_case": ["high-quality-upscaling", "latent-based"]
+          }
+        },
+        "swinir_4x": {
+          "safetensors": {
+            "name": "SwinIR 4x",
+            "url": "https://huggingface.co/caidas/swinIR/resolve/main/003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.safetensors",
+            "format": "safetensors",
+            "size": "139 MB",
+            "size_bytes": 146000000,
+            "description": "SwinIR transformer-based 4x upscaler",
+            "category": "upscalers",
+            "tags": ["upscaler", "swinir", "transformer", "4x"],
+            "use_case": ["transformer-upscaling", "high-detail"]
+          }
+        }
+      }
+    },
+    "embeddings": {
+      "description": "Textual inversion embeddings for style and quality control",
+      "storage_priority": 7,
+      "models": {
+        "easynegative": {
+          "safetensors": {
+            "name": "EasyNegative V2",
+            "url": "https://huggingface.co/embed/negative/resolve/main/EasyNegativeV2.safetensors",
+            "format": "safetensors", 
+            "size": "25 KB",
+            "size_bytes": 25000,
+            "description": "Negative prompt embedding for quality improvement",
+            "category": "embeddings",
+            "tags": ["embedding", "negative", "quality", "universal"],
+            "use_case": ["quality-improvement", "negative-prompts", "general"],
+            "recommended": true
+          }
+        },
+        "bad_prompt": {
+          "safetensors": {
+            "name": "Bad Prompt V2",
+            "url": "https://huggingface.co/embed/negative/resolve/main/bad_prompt_version2.safetensors",
+            "format": "safetensors",
+            "size": "25 KB", 
+            "size_bytes": 25000,
+            "description": "Advanced negative embedding for artifact reduction",
+            "category": "embeddings",
+            "tags": ["embedding", "negative", "artifacts", "advanced"],
+            "use_case": ["artifact-reduction", "advanced-negative"]
+          }
+        },
+        "badhandv4": {
+          "safetensors": {
+            "name": "BadHands V4",
+            "url": "https://huggingface.co/embed/negative/resolve/main/badhandv4.safetensors",
+            "format": "safetensors",
+            "size": "25 KB",
+            "size_bytes": 25000,
+            "description": "Specialized embedding for fixing hand generation",
+            "category": "embeddings",
+            "tags": ["embedding", "negative", "hands", "anatomy"],
+            "use_case": ["hand-correction", "anatomy-fix", "portraits"]
+          }
+        },
+        "verybadimagenegative": {
+          "safetensors": {
+            "name": "VeryBadImageNegative",
+            "url": "https://huggingface.co/embed/negative/resolve/main/verybadimagenegative_v1.3.safetensors",
+            "format": "safetensors",
+            "size": "25 KB",
+            "size_bytes": 25000,
+            "description": "Comprehensive negative embedding for image quality",
+            "category": "embeddings",
+            "tags": ["embedding", "negative", "comprehensive", "quality"],
+            "use_case": ["comprehensive-quality", "general-negative"]
+          }
+        }
+      }
+    },
+    "ipadapter": {
+      "description": "IP-Adapter models for image-based conditioning",
+      "storage_priority": 8,
+      "models": {
+        "ip_adapter_sdxl": {
+          "safetensors": {
+            "name": "IP-Adapter SDXL",
+            "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter_sdxl.safetensors",
+            "format": "safetensors",
+            "size": "688 MB",
+            "size_bytes": 721000000,
+            "description": "Image prompt adapter for SDXL models",
+            "category": "ipadapter",
+            "tags": ["ipadapter", "image-conditioning", "sdxl"],
+            "use_case": ["image-conditioning", "style-transfer", "reference"],
+            "recommended": true
+          }
+        },
+        "ip_adapter_plus_sdxl": {
+          "safetensors": {
+            "name": "IP-Adapter Plus SDXL",
+            "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus_sdxl_vit-h.safetensors",
+            "format": "safetensors",
+            "size": "688 MB",
+            "size_bytes": 721000000,
+            "description": "Enhanced IP-Adapter with better image understanding",
+            "category": "ipadapter",
+            "tags": ["ipadapter", "enhanced", "vit-h", "sdxl"],
+            "use_case": ["advanced-conditioning", "detailed-control"]
+          }
+        },
+        "ip_adapter_face": {
+          "safetensors": {
+            "name": "IP-Adapter Face",
+            "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter-faceid_sdxl.safetensors",
+            "format": "safetensors",
+            "size": "688 MB",
+            "size_bytes": 721000000,
+            "description": "Face-specialized IP-Adapter for identity preservation",
+            "category": "ipadapter", 
+            "tags": ["ipadapter", "face", "identity", "specialized"],
+            "use_case": ["face-conditioning", "identity-preservation", "portraits"]
+          }
+        },
+        "clip_vision": {
+          "safetensors": {
+            "name": "CLIP Vision ViT-H",
+            "url": "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors",
+            "format": "safetensors",
+            "size": "2.5 GB",
+            "size_bytes": 2600000000,
+            "description": "CLIP Vision encoder for IP-Adapter models",
+            "category": "ipadapter",
+            "tags": ["clip", "vision", "encoder", "required"],
+            "use_case": ["ipadapter-required", "vision-encoding"],
+            "recommended": true
+          }
+        }
+      }
+    },
+    "clip": {
+      "description": "CLIP models for text and image understanding",
+      "storage_priority": 9,
+      "models": {
+        "clip_vit_h": {
+          "safetensors": {
+            "name": "CLIP ViT-H-14",
+            "url": "https://huggingface.co/laion/CLIP-ViT-H-14-laion2B-s32B-b79K/resolve/main/open_clip_pytorch_model.bin",
+            "format": "bin",
+            "size": "1.7 GB",
+            "size_bytes": 1800000000,
+            "description": "Large CLIP model for text-image understanding",
+            "category": "clip",
+            "tags": ["clip", "vit-h", "text-image", "understanding"],
+            "use_case": ["text-image-matching", "embeddings"]
+          }
+        },
+        "clip_vit_l": {
+          "safetensors": {
+            "name": "CLIP ViT-L-14",
+            "url": "https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/pytorch_model.bin",
+            "format": "bin",
+            "size": "1.4 GB",
+            "size_bytes": 1500000000,
+            "description": "Standard CLIP model for general use",
+            "category": "clip",
+            "tags": ["clip", "vit-l", "standard", "general"],
+            "use_case": ["general-clip", "text-image-tasks"]
+          }
+        },
+        "clip_vit_b": {
+          "safetensors": {
+            "name": "CLIP ViT-B-32",
+            "url": "https://huggingface.co/openai/clip-vit-base-patch32/resolve/main/pytorch_model.bin",
+            "format": "bin",
+            "size": "605 MB",
+            "size_bytes": 635000000,
+            "description": "Base CLIP model for memory-constrained environments",
+            "category": "clip",
+            "tags": ["clip", "vit-b", "base", "memory-efficient"],
+            "use_case": ["memory-constrained", "basic-clip"]
+          }
+        }
+      }
+    },
+    "motion": {
+      "description": "Animation and motion models",
+      "storage_priority": 10,
+      "models": {
+        "animatediff": {
+          "safetensors": {
+            "name": "AnimateDiff Motion Module",
+            "url": "https://huggingface.co/guoyww/animatediff/resolve/main/mm_sdxl_v10_beta.safetensors",
+            "format": "safetensors",
+            "size": "1.8 GB",
+            "size_bytes": 1900000000,
+            "description": "Motion module for video generation with AnimateDiff",
+            "category": "motion",
+            "tags": ["motion", "video", "animation", "animatediff"],
+            "use_case": ["video-generation", "animation", "motion"]
+          }
+        },
+        "stable_video": {
+          "safetensors": {
+            "name": "Stable Video Diffusion",
+            "url": "https://huggingface.co/stabilityai/stable-video-diffusion-img2vid/resolve/main/svd.safetensors",
+            "format": "safetensors",
+            "size": "9.5 GB",
+            "size_bytes": 10200000000,
+            "description": "Stable Video Diffusion for image-to-video",
+            "category": "motion",
+            "tags": ["video", "stable", "img2vid", "diffusion"],
+            "use_case": ["image-to-video", "video-generation"]
+          }
+        }
+      }
+    }
+  },
+  "format_info": {
+    "safetensors": {
+      "description": "Safe, memory-mapped tensor format preferred for production",
+      "advantages": ["Safe loading", "Memory efficient", "Fast", "Widely supported"],
+      "use_cases": ["Production", "Memory efficiency", "Security"]
+    },
+    "gguf": {
+      "description": "GGML Universal Format optimized for quantized models",
+      "advantages": ["Quantization support", "Memory efficient", "CPU inference", "Mobile friendly"],
+      "use_cases": ["Memory-constrained", "CPU inference", "Mobile deployment", "Edge computing"]
+    },
+    "bin": {
+      "description": "PyTorch binary format",
+      "advantages": ["Native PyTorch", "Complete model state"],
+      "disadvantages": ["Potential security risks", "Larger memory usage"],
+      "use_cases": ["Legacy models", "PyTorch native"]
+    },
+    "pt": {
+      "description": "PyTorch tensor format",
+      "advantages": ["PyTorch native", "Flexible"],
+      "use_cases": ["PyTorch workflows", "Custom models"]
+    },
+    "ckpt": {
+      "description": "Legacy checkpoint format",
+      "advantages": ["Legacy support"],
+      "disadvantages": ["Security risks", "Inefficient"],
+      "use_cases": ["Legacy models only"]
+    }
+  },
+  "usage_recommendations": {
+    "free_tier_50gb": {
+      "essential_models": [
+        "sdxl_base.safetensors",
+        "sdxl_vae.safetensors",
+        "easynegative.safetensors",
+        "esrgan_4x.safetensors",
+        "ip_adapter_sdxl.safetensors"
+      ],
+      "total_size_gb": 11.2,
+      "description": "Minimal setup for 50GB Free Tier"
+    },
+    "professional_setup": {
+      "recommended_models": [
+        "chroma_v48.safetensors",
+        "chroma_vae.safetensors", 
+        "t5xxl_fp8.safetensors",
+        "realfine.safetensors",
+        "canny_sdxl.safetensors",
+        "depth_sdxl.safetensors"
+      ],
+      "total_size_gb": 37.8,
+      "description": "Professional setup with Chroma for high quality"
+    },
+    "memory_optimized": {
+      "efficient_models": [
+        "sdxl_base.gguf",
+        "flux_schnell.gguf",
+        "t5xxl_gguf.gguf",
+        "esrgan_4x.safetensors"
+      ],
+      "total_size_gb": 18.2,
+      "description": "Memory-optimized setup with GGUF quantization"
+    }
+  },
+  "download_optimization": {
+    "parallel_downloads": 3,
+    "chunk_size_mb": 8,
+    "verify_integrity": true,
+    "resume_support": true,
+    "bandwidth_throttling": true,
+    "storage_monitoring": true
+  }
+}
