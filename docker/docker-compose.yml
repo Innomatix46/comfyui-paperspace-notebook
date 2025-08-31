@@ -1,0 +1,217 @@
+# Docker Compose for ComfyUI on Paperspace with GPU support
+# Optimized for fast deployment and A6000 GPU utilization
+
+version: '3.8'
+
+services:
+  comfyui:
+    build:
+      context: .
+      dockerfile: Dockerfile.comfyui
+      target: production
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    image: comfyui:paperspace-optimized
+    container_name: comfyui-paperspace
+    restart: unless-stopped
+    
+    # GPU configuration for A6000
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # Environment variables
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONUNBUFFERED=1
+      - COMFYUI_PATH=/app/ComfyUI
+      - TCMALLOC_LARGE_ALLOC_REPORT_THRESHOLD=10737418240
+      - LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libtcmalloc.so.4
+      # Paperspace specific
+      - PAPERSPACE_FQDN=${PAPERSPACE_FQDN}
+      - PAPERSPACE_NOTEBOOK_REPO_ID=${PAPERSPACE_NOTEBOOK_REPO_ID}
+      # Storage optimization
+      - MAX_STORAGE_GB=45
+      - AUTO_CLEANUP=true
+      - MODEL_CACHE_SIZE=20
+      
+    # Port mapping for Paperspace
+    ports:
+      - "8188:8188"    # ComfyUI main port
+      - "6006:6006"    # Tensorboard port
+      - "8080:8080"    # Alternative web port
+      
+    # Volume mounts for persistent data
+    volumes:
+      # Models and outputs (persistent)
+      - comfyui-models:/app/ComfyUI/models:rw
+      - comfyui-output:/app/ComfyUI/output:rw
+      - comfyui-input:/app/ComfyUI/input:rw
+      - comfyui-temp:/app/ComfyUI/temp:rw
+      
+      # Custom nodes and user data
+      - comfyui-custom:/app/ComfyUI/custom_nodes:rw
+      - comfyui-user:/app/ComfyUI/user:rw
+      
+      # Logs and cache
+      - comfyui-logs:/app/ComfyUI/logs:rw
+      - comfyui-cache:/app/.cache:rw
+      
+      # Host mounts (if needed)
+      - ./configs:/app/configs:ro
+      - ./workflows:/app/workflows:ro
+      
+    # Network configuration
+    networks:
+      - comfyui-network
+      
+    # Resource limits (adjusted for A6000)
+    deploy:
+      resources:
+        limits:
+          memory: 32G
+          cpus: '8'
+        reservations:
+          memory: 16G
+          cpus: '4'
+          
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8188/system_stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+      
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+        
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp:size=2G,uid=1000,gid=1000
+      
+    # Dependency on supporting services
+    depends_on:
+      - tensorboard
+      
+  # Tensorboard service for model monitoring
+  tensorboard:
+    image: tensorflow/tensorflow:latest-gpu
+    container_name: tensorboard-comfyui
+    restart: unless-stopped
+    
+    ports:
+      - "6007:6006"  # Alternative Tensorboard port
+      
+    volumes:
+      - comfyui-logs:/logs:ro
+      - comfyui-output:/outputs:ro
+      
+    command: >
+      tensorboard 
+      --logdir=/logs 
+      --bind_all 
+      --port=6006 
+      --reload_interval=10
+      
+    networks:
+      - comfyui-network
+      
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1'
+          
+  # Redis for caching (optional)
+  redis-cache:
+    image: redis:7-alpine
+    container_name: redis-comfyui
+    restart: unless-stopped
+    
+    ports:
+      - "6379:6379"
+      
+    volumes:
+      - redis-data:/data
+      
+    command: >
+      redis-server 
+      --appendonly yes 
+      --maxmemory 1gb 
+      --maxmemory-policy allkeys-lru
+      
+    networks:
+      - comfyui-network
+      
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+# Named volumes for persistence
+volumes:
+  comfyui-models:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/models
+      
+  comfyui-output:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/output
+      
+  comfyui-input:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data/input
+      
+  comfyui-temp:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      
+  comfyui-custom:
+    driver: local
+    
+  comfyui-user:
+    driver: local
+    
+  comfyui-logs:
+    driver: local
+    
+  comfyui-cache:
+    driver: local
+    
+  redis-data:
+    driver: local
+
+# Network configuration
+networks:
+  comfyui-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: comfyui-br0

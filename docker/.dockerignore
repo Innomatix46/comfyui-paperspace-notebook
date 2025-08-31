@@ -1,0 +1,292 @@
+# Docker ignore file to optimize build context for ComfyUI
+# Reduces build context size and improves build performance
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Documentation
+README.md
+*.md
+docs/
+documentation/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+log/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# nyc test coverage
+.nyc_output/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+bower_components/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.venv/
+venv/
+ENV/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.virtualenv/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+*.code-workspace
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ComfyUI specific
+ComfyUI/
+output/
+models/
+input/
+temp/
+custom_nodes/
+user/
+
+# Data directories (should be mounted as volumes)
+data/
+
+# Cache directories
+.cache/
+.npm/
+.yarn/
+.pip/
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dll
+*.exe
+*.app
+*.dSYM/
+
+# Package files
+*.tar.gz
+*.tgz
+*.zip
+*.rar
+*.7z
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuration files with secrets
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Large files that should be downloaded at runtime
+*.ckpt
+*.safetensors
+*.pt
+*.pth
+*.bin
+*.onnx
+*.pb
+*.tflite
+*.h5
+*.hdf5
+*.model
+
+# Test files
+tests/
+test/
+spec/
+__tests__/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# PyTorch model files
+pytorch_model.bin
+model.safetensors
+
+# Hugging Face cache
+transformers_cache/
+diffusers_cache/
+
+# CUDA compilation cache
+.nv_fatbin/
+
+# Conda
+.conda/
+conda-bld/
+
+# Docker files (exclude current Dockerfile)
+Dockerfile*
+!Dockerfile.comfyui
+docker-compose*.yml
+!docker-compose.yml
+
+# CI/CD
+.travis.yml
+.circleci/
+.github/workflows/
+Jenkinsfile
+azure-pipelines.yml
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Temporary directories
+tmp/
+temp/
+
+# Runtime directories that will be created
+run/
+var/run/
+
+# Memory dumps
+*.dump
+*.dmp
+core.*
+
+# Profiling output
+*.prof
+
+# Security scan results
+.snyk
+
+# Local configuration
+local.conf
+*.local
+
+# Editor backup files
+*~
+.#*
+\#*#
+
+# Vim swap files
+*.swp
+*.swo
+
+# Emacs backup files
+*~
+\#*\#
+
+# Patch files
+*.patch
+*.diff
+
+# Archive files
+*.tar
+*.gz
+*.bz2
+*.xz
+*.lz
+*.lzma
+*.Z
+
+# Binary files
+*.bin
+*.exe
+*.com
+*.cmd
+*.bat
+*.dll
+*.so
+*.dylib
+
+# Media files (unless specifically needed)
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.mp3
+*.wav
+*.flac
+*.ogg
+
+# Large image files (will be handled separately)
+*.tif
+*.tiff
+*.psd
+*.xcf
+
+# Exclude everything in parent directories
+../

@@ -1,12 +1,41 @@
 #!/bin/bash
 # run.sh - Main ComfyUI Orchestration Script for Paperspace
 # This is the primary entrypoint that handles the complete ComfyUI setup and launch process
+# Now supports Docker mode for 1-2 minute deployments
 
 # Exit immediately on any error to ensure robust operation
 set -e
 
 # =============================================================================
-# ENVIRONMENT SETUP
+# EXECUTION MODE CONFIGURATION
+# =============================================================================
+
+# Check for Docker mode
+DOCKER_MODE="${DOCKER_MODE:-false}"
+USE_DOCKER="${USE_DOCKER:-$DOCKER_MODE}"
+
+# Docker mode execution
+if [ "$USE_DOCKER" = "true" ] || [ "$DOCKER_MODE" = "true" ]; then
+    echo "=========================================="
+    echo "🐳 ComfyUI Docker Mode - Fast Deployment"
+    echo "=========================================="
+    echo "Startup Time: 1-2 minutes (vs 15-20 traditional)"
+    echo "Docker Image: Pre-built with all dependencies"
+    echo "A6000 Optimized: CUDA 12.4 + Flash Attention"
+    echo "=========================================="
+    
+    if [ -f "scripts/docker_quick_start.sh" ]; then
+        echo "==> Launching Docker quick start..."
+        exec "./scripts/docker_quick_start.sh" start
+    else
+        echo "❌ Docker quick start script not found"
+        echo "==> Falling back to traditional setup..."
+        echo ""
+    fi
+fi
+
+# =============================================================================
+# TRADITIONAL MODE ENVIRONMENT SETUP
 # =============================================================================
 
 # Define core project paths for consistent operation across all modules
@@ -22,10 +51,12 @@ mkdir -p "$STORAGE_DIR/temp"
 
 echo "=========================================="
 echo "🚀 ComfyUI Paperspace Setup & Launch"
+echo "🐌 Traditional Mode - Full Installation"
 echo "=========================================="
 echo "Project Root: $PROJECT_ROOT"
 echo "ComfyUI Directory: $COMFYUI_DIR"
 echo "Storage Directory: $STORAGE_DIR"
+echo "Setup Time: 15-20 minutes (use DOCKER_MODE=true for 1-2 min)"
 echo "=========================================="
 
 # =============================================================================
